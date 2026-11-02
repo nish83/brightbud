@@ -1,5 +1,5 @@
 // Brightbud offline cache. Bump VERSION when you change files so iPads pick up the update.
-const VERSION = 'brightbud-v1';
+const VERSION = 'brightbud-v2';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/apple-touch-icon.png', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {

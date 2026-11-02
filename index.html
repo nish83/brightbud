@@ -97,6 +97,46 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .tile[data-s="words"]{--c:var(--words);--cd:var(--words-deep)}
 .tile[data-s="numbers"]{--c:var(--numbers);--cd:var(--numbers-deep)}
 .tile[data-s="geo"]{--c:var(--geo);--cd:var(--geo-deep)}
+.tile.play{--c:#FF5FA2;--cd:#C93277;min-height:140px}
+.tile.play[data-play="dress"]{--c:#14A3A3;--cd:#0B7272}
+.tile.play .lvl{margin-top:auto}
+
+/* Colouring */
+.pages{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.page .pthumb{width:100%;aspect-ratio:1;border-radius:14px;overflow:hidden;border:2px solid var(--bg-deep);background:#fff}
+.page .pthumb svg{width:100%;height:100%;display:block}
+.cp .r{fill:#fff;stroke:#1B2A4A;stroke-width:3;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.cp .l{fill:none;stroke:#1B2A4A;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.cp .k{fill:#1B2A4A}
+.cp.thumb .r,.cp.thumb .l{stroke-width:1.5}
+.cpwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+@media (min-width:820px){.cpwrap{grid-template-columns:minmax(0,calc(100vh - 150px)) minmax(220px,1fr)}}
+.cpboard{width:100%;max-width:calc(100vh - 150px);aspect-ratio:1;background:#fff;border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);overflow:hidden;margin:0 auto}
+.cpboard svg{width:100%;height:100%;display:block;touch-action:manipulation}
+.cpboard .r{cursor:pointer}
+.cptools{display:flex;flex-direction:column;gap:14px}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:10px}
+.swatch{width:48px;height:48px;border-radius:50%;border:3px solid var(--ink);padding:0;box-shadow:0 3px 0 var(--ink)}
+.swatch[aria-pressed="true"]{outline:4px solid var(--gold);outline-offset:3px;transform:scale(1.08)}
+.swatch.big{width:64px;height:64px;box-shadow:none}
+.cpbtns{display:flex;gap:10px;flex-wrap:wrap}
+.cpbtns .gold{flex:1;min-width:150px}
+
+/* Dress-up */
+.dresswrap{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-content:start}
+@media (min-width:820px){.dresswrap{grid-template-columns:minmax(280px,4fr) minmax(0,6fr)}}
+.dollstage{border-radius:20px;border:3px solid var(--ink);overflow:hidden;aspect-ratio:300/480;max-height:calc(100vh - 340px);margin:0 auto;max-width:100%}
+.dollstage svg{width:100%;height:100%;display:block}
+.dollname{display:flex;flex-direction:column;align-items:center;text-align:center}
+.dollname b{font-family:var(--f-display);font-weight:400;font-size:1.5rem}
+.dollname span{font-family:var(--f-display);font-size:.95rem;color:var(--geo-deep);letter-spacing:.03em}
+.dollpick{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.dollchip{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;width:72px;border:3px solid var(--ink);border-radius:16px;background:var(--card);padding:4px;font-family:var(--f-display);font-size:.8rem}
+.dollchip svg{width:56px;height:56px;border-radius:50%}
+.dollchip[aria-pressed="true"]{background:#FFF1CC;outline:3px solid var(--gold)}
+.ditem .thumb{background:var(--card-soft)}
+.colorrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.colorrow .lbl{font-family:var(--f-display);font-size:1.05rem;margin-right:4px}
 .homeactions{display:flex;gap:12px;flex-wrap:wrap}
 .homeactions .btn{flex:1;min-width:140px}
 
@@ -368,6 +408,52 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
       <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
         <div class="tabs" id="shopTabs"></div>
         <div class="items" id="shopItems"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Colouring -->
+  <section class="screen" id="s-colour" hidden>
+    <div class="topbar">
+      <button class="btn small" id="colourBack">Back</button>
+      <h2 style="font-size:1.8rem" id="colourTitle">Colouring</h2>
+    </div>
+    <div id="colourGallery" style="display:flex;flex-direction:column;gap:14px">
+      <div class="tabs" id="colourTabs"></div>
+      <div class="pages" id="colourPages"></div>
+    </div>
+    <div class="cpwrap" id="colourCanvas" hidden>
+      <div class="cpboard" id="cpBoard"></div>
+      <div class="cptools">
+        <div class="swatches" id="cpSwatches"></div>
+        <div class="cpbtns">
+          <button class="btn small" id="cpUndo">Undo</button>
+          <button class="btn small" id="cpRestart">Start again</button>
+          <button class="btn gold" id="cpDone">I'm done!</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dress-up -->
+  <section class="screen" id="s-dress" hidden>
+    <div class="topbar">
+      <button class="btn small" id="dressBack">Back</button>
+      <h2 style="font-size:1.8rem">Dress-up</h2>
+      <span class="grow"></span>
+      <span class="starpill" id="dressStars"></span>
+    </div>
+    <div class="dresswrap">
+      <div class="stagecard">
+        <div class="dollstage" id="dollStage"></div>
+        <div class="dollname" id="dollName"></div>
+        <div class="dollpick" id="dollPick"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+        <div class="tabs" id="dressTabs"></div>
+        <div class="items" id="dressItems"></div>
+        <div class="colorrow" id="dressColors"></div>
+        <div class="shopaction" id="dressUnlock" hidden></div>
       </div>
     </div>
   </section>
@@ -1027,7 +1113,7 @@ function show(name) {
   current = name;
   document.querySelectorAll('.screen').forEach(el => { el.hidden = el.id !== 's-' + name; });
   try { speechSynthesis.cancel(); } catch (e) {}
-  ({ profiles: renderProfiles, create: renderCreate, home: renderHome, shop: renderShop, gu: renderGU })[name]?.();
+  ({ profiles: renderProfiles, create: renderCreate, home: renderHome, shop: renderShop, gu: renderGU, colour: renderColour, dress: renderDress })[name]?.();
   const scr = $('#s-' + name); if (scr) scr.scrollTop = 0;
 }
 const starPill = n => `${STAR}<span>${fmt(n)}</span>`;
@@ -1077,8 +1163,12 @@ function renderHome() {
   } else { $('#growFill').style.width = '100%'; $('#growTxt').textContent = 'Fully grown! Your bud is a Mighty Bloom.'; }
   $('#tiles').innerHTML = SUBJECTS.map(s => { const L = p.levels[s.id];
     return `<button class="tile" data-s="${s.id}"><span class="glyph">${s.glyph}</span><h3>${s.name}</h3><span class="skill">${SKILLS[s.id][L - 1]}</span>
-      <span class="lvl">Level ${L} of 10</span><span class="meter">${Array.from({ length: 10 }, (_, i) => `<b class="${i < L ? 'on' : ''}"></b>`).join('')}</span></button>`; }).join('');
+      <span class="lvl">Level ${L} of 10</span><span class="meter">${Array.from({ length: 10 }, (_, i) => `<b class="${i < L ? 'on' : ''}"></b>`).join('')}</span></button>`; }).join('')
+    + `<button class="tile play" data-play="colour"><span class="glyph">${PALETTE_ICON}</span><h3>Colouring</h3><span class="skill">Nature, animals, princesses</span><span class="lvl">Free play</span></button>`
+    + `<button class="tile play" data-play="dress"><span class="glyph">${DRESS_ICON}</span><h3>Dress-up</h3><span class="skill">Princesses and pop stars</span><span class="lvl">Free play</span></button>`;
 }
+const PALETTE_ICON = '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4C12 4 4 12 4 23c0 10 8 17 16 17 3 0 4-2 3-4-1-3 1-5 4-5h5c6 0 12-4 12-11C44 11 35 4 24 4z" fill="#fff" stroke="#1B2A4A" stroke-width="3"/><circle cx="14" cy="22" r="4" fill="#E5484D"/><circle cx="20" cy="12" r="4" fill="#FFB703"/><circle cx="31" cy="12" r="4" fill="#22A95B"/><circle cx="37" cy="21" r="4" fill="#3D7BFD"/></svg>';
+const DRESS_ICON = '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M17 4h14l-2 9 4 9 9 22H6l9-22 4-9z" fill="#fff" stroke="#1B2A4A" stroke-width="3" stroke-linejoin="round"/><path d="M15 22h18" stroke="#FF5FA2" stroke-width="4"/><circle cx="24" cy="32" r="2.5" fill="#FFB703"/><circle cx="16" cy="38" r="2" fill="#FFB703"/><circle cx="32" cy="38" r="2" fill="#FFB703"/></svg>';
 
 /* ---------- Quiz round ---------- */
 let R = null;
@@ -1238,10 +1328,385 @@ function renderGU() {
   }).join('') || '<p class="note">No players yet.</p>';
 }
 
+/* ---------- Colouring ---------- */
+// Line art: every shape with class "r" is a region the child can tap to fill. "l" = ink lines, "k" = solid ink details.
+const INK = '#1B2A4A';
+const CP_COLORS = ['#E5484D', '#FF6A4D', '#FF9F43', '#FFB703', '#FFE08A', '#22A95B', '#7ED37E', '#5FD3A5', '#3D7BFD', '#5BB4FF', '#A6DDFF', '#9B59D0', '#C6B8FF', '#FF8FC7', '#FFD6EA', '#8B5A2B', '#D9A066', '#FFE0C7', '#9AA5B1', '#1B2A4A', '#FFFFFF'];
+const CP_SPECIAL = { rainbow:'linear-gradient(135deg,#FF6A4D,#FFC93C,#5FD3A5,#5BB4FF,#A77BF3)', glitter: 'radial-gradient(circle at 30% 30%,#FFB703 0 3px,transparent 4px),radial-gradient(circle at 70% 60%,#fff 0 3px,transparent 4px),radial-gradient(circle at 40% 75%,#A77BF3 0 2px,transparent 3px),#FFD6EA' };
+const CP_DEFS = `<defs><linearGradient id="cp-rainbow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF6A4D"/><stop offset=".25" stop-color="#FFC93C"/><stop offset=".5" stop-color="#5FD3A5"/><stop offset=".75" stop-color="#5BB4FF"/><stop offset="1" stop-color="#A77BF3"/></linearGradient>
+<pattern id="cp-glitter" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#FFD6EA"/><circle cx="4" cy="4" r="2" fill="#FFB703"/><circle cx="12" cy="10" r="1.6" fill="#fff"/><circle cx="10" cy="3" r="1.1" fill="#A77BF3"/><circle cx="3" cy="12" r="1.3" fill="#5BB4FF"/></pattern></defs>`;
+const rg = (tag, a) => `<${tag} class="r" ${a}/>`;
+const cl = d => `<path class="l" d="${d}"/>`;
+const flip = s => `<g transform="matrix(-1 0 0 1 400 0)">${s}</g>`;
+const petals = (cx, cy, n, dist, rx, ry) => Array.from({ length: n }, (_, i) => `<ellipse class="r" cx="${cx}" cy="${cy - dist}" rx="${rx}" ry="${ry}" transform="rotate(${360 / n * i} ${cx} ${cy})"/>`).join('');
+const starPts = (cx, cy, r1, r2) => Array.from({ length: 10 }, (_, i) => { const r = i % 2 ? r2 : r1, a = (i * 36 - 90) * Math.PI / 180; return `${(cx + Math.cos(a) * r).toFixed(1)},${(cy + Math.sin(a) * r).toFixed(1)}`; }).join(' ');
+const cstar = (cx, cy, r1, r2) => `<polygon class="r" points="${starPts(cx, cy, r1, r2)}"/>`;
+const hex = (cx, cy, r) => `<polygon class="r" points="${Array.from({ length: 6 }, (_, i) => { const a = (i * 60 - 30) * Math.PI / 180; return `${(cx + Math.cos(a) * r).toFixed(1)},${(cy + Math.sin(a) * r).toFixed(1)}`; }).join(' ')}"/>`;
+const band = (cx, cy, R, r) => `<path class="r" d="M${cx - R} ${cy} A${R} ${R} 0 0 1 ${cx + R} ${cy} L${cx + r} ${cy} A${r} ${r} 0 0 0 ${cx - r} ${cy}Z"/>`;
+const cloud = (x, y, s = 1) => `<path class="r" transform="translate(${x} ${y}) scale(${s})" d="M0 0 Q-4 -26 22 -28 Q30 -50 56 -44 Q74 -60 94 -40 Q120 -40 118 -14 Q126 4 104 6 L6 6 Q-10 6 0 0Z"/>`;
+const mini = (cx, cy) => petals(cx, cy, 5, 12, 8, 12) + rg('circle', `cx="${cx}" cy="${cy}" r="7"`);
+
+const CP_CATS = [['nature', 'Nature'], ['animals', 'Animals'], ['magic', 'Princesses & magic']];
+const CP_PAGES = [
+  { id: 'flower', cat: 'nature', name: 'Sunny flower', art:
+    rg('rect', 'width="400" height="300"') + rg('circle', 'cx="335" cy="65" r="38"') + cloud(36, 92, .9)
+    + rg('path', 'd="M0 290 Q100 262 200 286 Q300 262 400 290 L400 400 L0 400Z"')
+    + rg('path', 'd="M194 210 Q186 300 196 372 L208 372 Q198 300 206 210Z"')
+    + rg('path', 'd="M198 304 Q150 262 112 288 Q150 324 198 314Z"') + rg('path', 'd="M204 272 Q252 236 290 258 Q254 296 204 286Z"')
+    + petals(200, 160, 8, 50, 24, 42) + rg('circle', 'cx="200" cy="160" r="30"') + mini(70, 345) + mini(335, 350) },
+  { id: 'rainbow', cat: 'nature', name: 'Rainbow day', art:
+    rg('rect', 'width="400" height="400"') + rg('circle', 'cx="335" cy="62" r="30"')
+    + band(200, 330, 175, 145) + band(200, 330, 145, 115) + band(200, 330, 115, 85) + band(200, 330, 85, 55)
+    + rg('path', 'd="M0 330 L400 330 L400 400 L0 400Z"') + cloud(4, 344, 1.05) + cloud(272, 344, 1.05)
+    + cl('M90 80 q10 -10 20 0 q10 -10 20 0') + cl('M150 52 q8 -8 16 0 q8 -8 16 0') + mini(200, 372) },
+  { id: 'tree', cat: 'nature', name: 'Apple tree', art:
+    rg('rect', 'width="400" height="400"') + rg('circle', 'cx="62" cy="62" r="32"')
+    + rg('path', 'd="M0 330 Q120 290 220 320 Q320 290 400 320 L400 400 L0 400Z"')
+    + rg('path', 'd="M182 380 L188 250 Q170 232 148 230 L154 220 Q176 222 190 236 L192 196 L208 196 L210 236 Q226 222 246 220 L252 230 Q230 232 214 250 L220 380Z"')
+    + rg('circle', 'cx="146" cy="168" r="62"') + rg('circle', 'cx="256" cy="168" r="62"') + rg('circle', 'cx="200" cy="114" r="72"')
+    + rg('circle', 'cx="150" cy="190" r="13"') + rg('circle', 'cx="232" cy="134" r="13"') + rg('circle', 'cx="268" cy="196" r="13"') + rg('circle', 'cx="186" cy="94" r="13"')
+    + rg('path', 'd="M300 392 L300 352 L330 330 L360 352 L360 392Z"') + rg('rect', 'x="320" y="364" width="20" height="28"') + mini(60, 370) },
+  { id: 'butterfly', cat: 'nature', name: 'Butterfly', art: (() => {
+    const wing = rg('path', 'd="M196 196 C150 80 50 80 62 160 C70 214 150 220 196 206Z"') + rg('path', 'd="M196 212 C150 220 92 250 112 306 C130 340 188 280 196 226Z"')
+      + rg('circle', 'cx="118" cy="150" r="20"') + rg('circle', 'cx="150" cy="264" r="14"') + rg('circle', 'cx="88" cy="186" r="10"');
+    return rg('rect', 'width="400" height="400"') + rg('path', 'd="M0 350 Q200 320 400 350 L400 400 L0 400Z"') + cloud(270, 70, .7)
+      + wing + flip(wing) + rg('ellipse', 'cx="200" cy="216" rx="12" ry="58"') + rg('circle', 'cx="200" cy="150" r="17"')
+      + cl('M194 136 Q180 100 166 90') + cl('M206 136 Q220 100 234 90') + rg('circle', 'cx="166" cy="88" r="6"') + rg('circle', 'cx="234" cy="88" r="6"')
+      + mini(60, 372) + mini(340, 372); })() },
+  { id: 'cat', cat: 'animals', name: 'Kitty', art:
+    rg('rect', 'width="400" height="330"') + rg('rect', 'y="330" width="400" height="70"')
+    + rg('path', 'd="M266 300 Q340 292 330 222 Q326 200 342 196 Q352 212 348 232 Q352 312 272 322Z"')
+    + rg('ellipse', 'cx="200" cy="292" rx="80" ry="62"') + rg('ellipse', 'cx="200" cy="304" rx="42" ry="34"')
+    + rg('polygon', 'points="140,132 150,58 194,108"') + rg('polygon', 'points="260,132 250,58 206,108"')
+    + rg('polygon', 'points="152,118 155,82 178,106"') + rg('polygon', 'points="248,118 245,82 222,106"')
+    + rg('circle', 'cx="200" cy="162" r="68"') + rg('ellipse', 'cx="174" cy="156" rx="13" ry="17"') + rg('ellipse', 'cx="226" cy="156" rx="13" ry="17"')
+    + '<ellipse class="k" cx="176" cy="158" rx="5" ry="10"/><ellipse class="k" cx="228" cy="158" rx="5" ry="10"/>'
+    + rg('polygon', 'points="191,182 209,182 200,193"') + cl('M200 193 Q200 204 188 206') + cl('M200 193 Q200 204 212 206')
+    + cl('M150 186 L108 178') + cl('M150 196 L106 200') + cl('M250 186 L292 178') + cl('M250 196 L294 200')
+    + rg('ellipse', 'cx="168" cy="350" rx="24" ry="13"') + rg('ellipse', 'cx="232" cy="350" rx="24" ry="13"')
+    + rg('circle', 'cx="72" cy="330" r="34"') + cl('M48 316 Q72 330 96 316') + cl('M44 334 Q72 350 100 334') + cl('M96 346 Q120 370 150 362') },
+  { id: 'fish', cat: 'animals', name: 'Happy fish', art:
+    rg('rect', 'width="400" height="400"') + rg('path', 'd="M0 350 Q100 330 200 350 Q300 370 400 345 L400 400 L0 400Z"')
+    + rg('path', 'd="M40 362 Q20 300 50 260 Q30 220 62 180 Q72 222 54 262 Q82 302 62 362Z"') + rg('path', 'd="M340 366 Q320 310 350 270 Q332 236 360 206 Q372 240 356 272 Q384 312 364 366Z"')
+    + rg('path', 'd="M270 190 L350 128 Q330 190 350 252Z"') + rg('path', 'd="M150 134 Q200 80 252 142Z"')
+    + rg('ellipse', 'cx="190" cy="190" rx="100" ry="64"')
+    + rg('path', 'd="M150 132 Q132 190 150 248 L176 252 Q158 190 176 128Z"') + rg('path', 'd="M214 128 Q234 190 214 253 L240 248 Q258 190 240 132Z"')
+    + rg('path', 'd="M180 202 Q200 232 232 214 Q206 196 180 202Z"') + rg('circle', 'cx="124" cy="176" r="16"') + '<circle class="k" cx="120" cy="176" r="7"/>'
+    + cl('M94 202 Q102 208 110 202') + rg('circle', 'cx="70" cy="120" r="10"') + rg('circle', 'cx="56" cy="90" r="7"') + rg('circle', 'cx="300" cy="80" r="9"')
+    + cstar(120, 366, 22, 10) + rg('path', 'd="M284 384 Q304 340 324 384Z"') },
+  { id: 'turtle', cat: 'animals', name: 'Little turtle', art:
+    rg('rect', 'width="400" height="400"') + rg('circle', 'cx="340" cy="60" r="30"') + rg('path', 'd="M0 300 Q200 270 400 300 L400 400 L0 400Z"')
+    + rg('ellipse', 'cx="132" cy="296" rx="24" ry="16"') + rg('ellipse', 'cx="268" cy="296" rx="24" ry="16"') + rg('polygon', 'points="288,262 322,254 290,248"')
+    + rg('circle', 'cx="82" cy="236" r="32"') + '<circle class="k" cx="72" cy="228" r="5"/>' + cl('M60 246 Q72 256 84 248')
+    + rg('path', 'd="M110 278 Q110 150 200 150 Q290 150 290 278Z"') + rg('path', 'd="M100 276 L300 276 Q306 292 290 296 L110 296 Q94 292 100 276Z"')
+    + hex(200, 222, 32) + hex(146, 248, 20) + hex(254, 248, 20) + hex(156, 190, 17) + hex(244, 190, 17) + mini(60, 360) + mini(340, 356) },
+  { id: 'owl', cat: 'animals', name: 'Night owl', art:
+    rg('rect', 'width="400" height="400"') + rg('circle', 'cx="322" cy="70" r="40"') + cstar(70, 60, 14, 6) + cstar(120, 110, 9, 4) + cstar(370, 160, 10, 4)
+    + rg('path', 'd="M0 328 Q200 298 400 318 L400 344 Q200 326 0 356Z"')
+    + rg('polygon', 'points="140,152 128,98 176,134"') + rg('polygon', 'points="260,152 272,98 224,134"')
+    + rg('ellipse', 'cx="200" cy="228" rx="80" ry="100"') + rg('ellipse', 'cx="200" cy="262" rx="50" ry="58"')
+    + rg('path', 'd="M124 206 Q94 270 140 318 Q152 258 140 218Z"') + rg('path', 'd="M276 206 Q306 270 260 318 Q248 258 260 218Z"')
+    + rg('circle', 'cx="170" cy="188" r="30"') + rg('circle', 'cx="230" cy="188" r="30"') + rg('circle', 'cx="170" cy="188" r="15"') + rg('circle', 'cx="230" cy="188" r="15"')
+    + '<circle class="k" cx="172" cy="190" r="7"/><circle class="k" cx="232" cy="190" r="7"/>' + rg('polygon', 'points="190,212 210,212 200,232"')
+    + cl('M176 252 q12 10 24 0 q12 10 24 0') + cl('M176 276 q12 10 24 0 q12 10 24 0')
+    + rg('ellipse', 'cx="180" cy="326" rx="12" ry="8"') + rg('ellipse', 'cx="220" cy="326" rx="12" ry="8"') },
+  { id: 'princess', cat: 'magic', name: 'Princess', art:
+    rg('rect', 'width="400" height="350"') + rg('path', 'd="M0 350 L400 350 L400 400 L0 400Z"') + cstar(60, 80, 16, 6) + cstar(345, 110, 11, 4) + cstar(70, 290, 11, 4) + cstar(330, 300, 14, 6)
+    + rg('path', 'd="M146 112 Q144 40 200 40 Q256 40 254 112 L266 222 Q200 238 134 222Z"') + rg('rect', 'x="190" y="148" width="20" height="28"')
+    + rg('path', 'd="M168 174 Q140 192 132 250 L146 254 Q152 208 174 194Z"') + rg('path', 'd="M232 174 Q260 192 268 250 L254 254 Q248 208 226 194Z"')
+    + rg('path', 'd="M164 226 L236 226 L312 366 Q200 392 88 366Z"')
+    + rg('path', 'd="M98 350 Q122 336 146 352 Q170 338 194 354 Q218 338 242 352 Q266 336 290 350 L312 366 Q200 392 88 366Z"')
+    + rg('path', 'd="M170 170 L230 170 L238 232 L162 232Z"') + rg('circle', 'cx="166" cy="180" r="16"') + rg('circle', 'cx="234" cy="180" r="16"')
+    + rg('rect', 'x="160" y="224" width="80" height="12" rx="6"') + rg('circle', 'cx="139" cy="258" r="10"') + rg('circle', 'cx="261" cy="258" r="10"')
+    + rg('circle', 'cx="200" cy="106" r="50"') + rg('path', 'd="M152 104 Q156 58 200 56 Q244 58 248 104 Q228 82 206 90 Q186 80 168 92 Q158 96 152 104Z"')
+    + rg('polygon', 'points="174,66 180,34 192,52 200,26 208,52 220,34 226,66"') + rg('circle', 'cx="200" cy="56" r="5"')
+    + '<ellipse class="k" cx="184" cy="110" rx="5" ry="7"/><ellipse class="k" cx="216" cy="110" rx="5" ry="7"/>' + rg('circle', 'cx="176" cy="126" r="7"') + rg('circle', 'cx="224" cy="126" r="7"')
+    + cl('M190 128 Q200 136 210 128') + cl('M262 252 L296 200') + cstar(300, 190, 18, 8) },
+  { id: 'castle', cat: 'magic', name: 'Castle', art:
+    rg('rect', 'width="400" height="400"') + cloud(20, 80, .8) + cloud(290, 60, .7) + rg('path', 'd="M0 340 Q200 300 400 340 L400 400 L0 400Z"')
+    + rg('rect', 'x="170" y="110" width="60" height="100"') + rg('rect', 'x="60" y="150" width="70" height="200"') + rg('rect', 'x="270" y="150" width="70" height="200"')
+    + rg('rect', 'x="120" y="200" width="160" height="150"') + [0, 1, 2, 3, 4].map(i => rg('rect', `x="${124 + i * 32}" y="186" width="20" height="16"`)).join('')
+    + rg('polygon', 'points="50,150 95,70 140,150"') + rg('polygon', 'points="260,150 305,70 350,150"') + rg('polygon', 'points="160,110 200,40 240,110"')
+    + cl('M95 70 L95 38') + cl('M305 70 L305 38') + cl('M200 40 L200 14') + rg('polygon', 'points="95,38 120,46 95,54"') + rg('polygon', 'points="305,38 330,46 305,54"') + rg('polygon', 'points="200,14 225,22 200,30"')
+    + rg('path', 'd="M175 350 L175 292 Q200 262 225 292 L225 350Z"') + rg('circle', 'cx="200" cy="150" r="14"')
+    + rg('path', 'd="M85 230 L85 208 Q95 194 105 208 L105 230Z"') + rg('path', 'd="M295 230 L295 208 Q305 194 315 208 L315 230Z"')
+    + rg('path', 'd="M140 250 L140 234 Q150 222 160 234 L160 250Z"') + rg('path', 'd="M240 250 L240 234 Q250 222 260 234 L260 250Z"')
+    + rg('path', 'd="M175 350 L225 350 L262 400 L138 400Z"') },
+  { id: 'unicorn', cat: 'magic', name: 'Unicorn', art:
+    rg('rect', 'width="400" height="400"') + rg('path', 'd="M0 340 Q200 316 400 340 L400 400 L0 400Z"') + cstar(330, 70, 18, 8) + cstar(60, 60, 12, 5) + cstar(370, 200, 10, 4)
+    + rg('path', 'd="M288 226 Q352 214 342 284 Q334 322 302 304 Q322 272 292 252Z"') + rg('path', 'd="M290 244 Q330 260 316 320 Q300 340 286 318 Q304 290 286 262Z"')
+    + [150, 186, 228, 262].map(x => rg('rect', `x="${x}" y="262" width="22" height="78" rx="10"`) + rg('rect', `x="${x - 2}" y="332" width="26" height="14" rx="4"`)).join('')
+    + rg('ellipse', 'cx="212" cy="250" rx="84" ry="50"') + rg('path', 'd="M150 236 Q138 182 148 150 L196 160 Q180 200 192 240Z"')
+    + rg('polygon', 'points="150,104 162,78 172,108"') + rg('ellipse', 'cx="140" cy="140" rx="46" ry="38"') + rg('ellipse', 'cx="104" cy="160" rx="26" ry="22"')
+    + rg('polygon', 'points="128,108 138,50 152,106"') + cl('M132 94 L148 88') + cl('M134 78 L146 74')
+    + rg('path', 'd="M162 104 Q192 100 198 132 Q178 128 168 118Z"') + rg('path', 'd="M172 130 Q206 130 206 168 Q186 160 178 146Z"') + rg('path', 'd="M180 168 Q212 172 208 208 Q190 198 186 182Z"')
+    + '<circle class="k" cx="138" cy="134" r="5"/><circle class="k" cx="96" cy="160" r="3"/>' + rg('circle', 'cx="124" cy="154" r="7"') + cl('M100 172 Q110 178 120 172') },
+  { id: 'mermaid', cat: 'magic', name: 'Mermaid', art:
+    rg('rect', 'width="400" height="400"') + rg('path', 'd="M0 360 Q200 340 400 360 L400 400 L0 400Z"') + rg('path', 'd="M250 380 Q266 310 330 316 Q382 334 392 384Z"')
+    + rg('circle', 'cx="70" cy="110" r="10"') + rg('circle', 'cx="54" cy="80" r="7"') + rg('circle', 'cx="330" cy="120" r="9"') + rg('circle', 'cx="350" cy="90" r="6"')
+    + rg('path', 'd="M150 110 Q148 40 200 40 Q252 40 250 110 Q268 190 242 244 Q228 202 232 164 L168 164 Q172 202 158 244 Q132 190 150 110Z"')
+    + rg('path', 'd="M168 232 Q160 296 188 330 Q202 346 196 352 L232 352 Q222 336 234 318 Q250 280 232 232Z"')
+    + rg('path', 'd="M196 348 Q160 360 148 392 Q188 384 214 364 Q240 384 280 392 Q266 360 232 348Z"')
+    + cl('M180 262 q10 10 20 0 q10 10 20 0') + cl('M184 288 q8 8 16 0 q8 8 16 0') + cl('M190 312 q8 8 16 0 q8 8 16 0')
+    + rg('path', 'd="M172 170 L228 170 L234 238 L166 238Z"') + rg('path', 'd="M174 176 Q146 200 150 250 L164 250 Q162 212 182 192Z"') + rg('path', 'd="M226 176 Q256 190 266 160 L254 152 Q248 174 222 190Z"')
+    + rg('circle', 'cx="157" cy="254" r="9"') + rg('circle', 'cx="262" cy="150" r="9"')
+    + rg('path', 'd="M176 196 Q187 176 198 196Z"') + rg('path', 'd="M202 196 Q213 176 224 196Z"')
+    + rg('circle', 'cx="200" cy="112" r="46"') + rg('path', 'd="M156 108 Q160 64 200 62 Q240 64 244 108 Q226 86 204 94 Q184 84 168 96 Q160 100 156 108Z"') + cstar(242, 74, 14, 6)
+    + '<ellipse class="k" cx="186" cy="116" rx="5" ry="7"/><ellipse class="k" cx="214" cy="116" rx="5" ry="7"/>' + cl('M190 132 Q200 140 210 132') },
+];
+let cpCat = 'nature', cpPage = null, cpColor = '#FF8FC7', cpHistory = [], cpConfirm = false;
+// Each picture gets its own pattern ids: browsers won't paint a pattern that lives in a hidden picture
+let cpUid = 0;
+const cpSVG = (page, cls = 'cp') => { const u = ++cpUid; return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" class="${cls}" data-uid="${u}">${CP_DEFS.replace(/cp-(rainbow|glitter)/g, `cp-$1-${u}`)}${page.art}</svg>`; };
+const fillCss = (svg, c) => CP_SPECIAL[c] ? `url(#cp-${c}-${svg.dataset.uid})` : c;
+function applyFills(svg, fills) { svg.querySelectorAll('.r').forEach((el, i) => { el.style.fill = fills && fills[i] ? fillCss(svg, fills[i]) : ''; }); }
+function cpFills(id) { const p = P(); p.colouring = p.colouring || {}; return p.colouring[id] || (p.colouring[id] = {}); }
+function renderColour() {
+  const p = P(); if (!p) return show('profiles');
+  const page = cpPage && CP_PAGES.find(x => x.id === cpPage);
+  $('#colourGallery').hidden = !!page; $('#colourCanvas').hidden = !page;
+  $('#colourTitle').textContent = page ? page.name : 'Colouring';
+  if (!page) {
+    $('#colourTabs').innerHTML = CP_CATS.map(([k, l]) => `<button class="chip" data-cptab="${k}" aria-pressed="${k === cpCat}">${l}</button>`).join('');
+    const list = CP_PAGES.filter(x => x.cat === cpCat);
+    $('#colourPages').innerHTML = list.map(pg => `<button class="item page" data-page="${pg.id}"><span class="pthumb">${cpSVG(pg, 'cp thumb')}</span><span class="nm">${pg.name}</span></button>`).join('');
+    list.forEach(pg => applyFills($(`[data-page="${pg.id}"] svg`), (p.colouring || {})[pg.id]));
+    return;
+  }
+  $('#cpBoard').innerHTML = cpSVG(page);
+  applyFills($('#cpBoard svg'), cpFills(page.id));
+  renderSwatches();
+}
+function renderSwatches() {
+  const sw = c => `<button class="swatch" data-swatch="${c}" style="background:${CP_SPECIAL[c] || c}" aria-label="${CP_SPECIAL[c] ? (c === 'rainbow' ? 'Rainbow' : 'Glitter') : c === '#FFFFFF' ? 'White (rubber)' : 'Colour'}" aria-pressed="${cpColor === c}"></button>`;
+  $('#cpSwatches').innerHTML = CP_COLORS.map(sw).join('') + Object.keys(CP_SPECIAL).map(sw).join('');
+  $('#cpRestart').textContent = cpConfirm ? 'Tap again to clear' : 'Start again';
+  $('#cpUndo').disabled = !cpHistory.length;
+}
+function cpFillAt(target) {
+  const el = target.closest('#cpBoard .r'); if (!el || !cpPage) return;
+  const regions = [...document.querySelectorAll('#cpBoard .r')], i = regions.indexOf(el), f = cpFills(cpPage);
+  cpHistory.push([i, f[i] || '']);
+  if (cpColor === '#FFFFFF') delete f[i]; else f[i] = cpColor;
+  el.style.fill = f[i] ? fillCss($('#cpBoard svg'), f[i]) : ''; cpConfirm = false; save(); sfx.tap(); renderSwatches();
+}
+function cpUndo() {
+  const last = cpHistory.pop(); if (!last) return;
+  const [i, prev] = last, f = cpFills(cpPage);
+  if (prev) f[i] = prev; else delete f[i];
+  applyFills($('#cpBoard svg'), f); save(); renderSwatches();
+}
+
+/* ---------- Dress-up ---------- */
+// Original characters: two princesses, a mermaid, and the Starlight Hunters, a K-pop idol trio who battle gloom monsters.
+const SKINS = ['#FFE0C7', '#F5C9A6', '#E0A880', '#C68863', '#9C6644', '#6E4530'];
+const HAIR_COLORS = ['#1B1B2A', '#5A3825', '#A0522D', '#E8B65A', '#F7E39B', '#D9DEE8', '#E5484D', '#FF8FC7', '#A77BF3', '#5BB4FF', '#5FD3A5'];
+const CLOTH_COLORS = ['#E5484D', '#FF6A4D', '#FFB703', '#FFE08A', '#22A95B', '#5FD3A5', '#3D7BFD', '#5BB4FF', '#9B59D0', '#C6B8FF', '#FF8FC7', '#FFD6EA', '#1B2A4A', '#FFFFFF'];
+const DEFAULT_LOOK = { skin: 1, hair: 'long', hairColor: '#5A3825', top: 'tee', topColor: '#5BB4FF', bottom: 'skirt', bottomColor: '#FF8FC7', dress: 'none', dressColor: '#FF8FC7',
+  shoes: 'sneakers', shoesColor: '#FFFFFF', acc: 'none', accColor: '#FFB703', held: 'none', heldColor: '#FF8FC7', bg: 'plain' };
+const DOLLS = [
+  { id: 'juniper', name: 'Princess Juniper', look: { skin: 4, hair: 'curly', hairColor: '#1B1B2A', dress: 'gown', dressColor: '#FFB703', shoes: 'heels', shoesColor: '#FFB703', acc: 'tiara', accColor: '#FFB703', held: 'wand', heldColor: '#FFB703', bg: 'ballroom' } },
+  { id: 'rosa', name: 'Princess Rosa', look: { skin: 1, hair: 'long', hairColor: '#5A3825', dress: 'gown', dressColor: '#FF8FC7', shoes: 'flats', shoesColor: '#FF8FC7', acc: 'flowercrown', accColor: '#FF8FC7', held: 'bouquet', heldColor: '#E5484D', bg: 'garden' } },
+  { id: 'marina', name: 'Marina the Mermaid', look: { skin: 2, hair: 'long', hairColor: '#5BB4FF', dress: 'mermaid', dressColor: '#FF8FC7', acc: 'starclips', accColor: '#FFB703', bg: 'sea' } },
+  { id: 'hana', name: 'Hana', team: true, look: { skin: 0, hair: 'bob', hairColor: '#FF8FC7', top: 'jacket', topColor: '#9B59D0', bottom: 'pleated', bottomColor: '#1B2A4A', shoes: 'boots', shoesColor: '#1B2A4A', acc: 'starclips', accColor: '#FFB703', held: 'mic', heldColor: '#C6B8FF', bg: 'stage' } },
+  { id: 'yuna', name: 'Yuna', team: true, look: { skin: 1, hair: 'ponytail', hairColor: '#1B1B2A', dress: 'coat', dressColor: '#1B2A4A', shoes: 'boots', shoesColor: '#E5484D', held: 'sword', heldColor: '#5BB4FF', bg: 'city' } },
+  { id: 'dara', name: 'Dara', team: true, look: { skin: 3, hair: 'buns', hairColor: '#5BB4FF', top: 'hoodie', topColor: '#FFB703', bottom: 'pants', bottomColor: '#3D7BFD', shoes: 'sneakers', shoesColor: '#FFFFFF', acc: 'headphones', accColor: '#FF6A4D', held: 'lightstick', heldColor: '#FF8FC7', bg: 'stage' } },
+];
+const shade = (hex, f) => { const n = parseInt(hex.slice(1), 16), c = [n >> 16, n >> 8 & 255, n & 255].map(v => Math.round(f < 0 ? v * (1 + f) : v + (255 - v) * f)); return '#' + c.map(v => v.toString(16).padStart(2, '0')).join(''); };
+const dp = (d, fill, sw = 3) => `<path d="${d}" fill="${fill}" stroke="${INK}" stroke-width="${sw}" stroke-linejoin="round" stroke-linecap="round"/>`;
+const dl = (d, c = INK, w = 3) => `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+const dc = (cx, cy, r, fill, sw = 3) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="${INK}" stroke-width="${sw}"/>`;
+const dstar = (cx, cy, r1, r2, fill) => `<polygon points="${starPts(cx, cy, r1, r2)}" fill="${fill}" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>`;
+const mir = s => `<g transform="matrix(-1 0 0 1 300 0)">${s}</g>`;
+const ARM = 'M114 196 Q96 202 90 252 L84 306 L104 310 L110 258 Q114 234 122 224Z';
+const SLEEVE_LONG = 'M114 194 Q94 200 88 252 L82 302 L106 306 L112 258 Q116 234 124 224Z';
+const SLEEVE_SHORT = 'M112 196 Q96 200 90 236 L112 242 L118 220Z';
+const both = s => s + mir(s);
+const sparkles = pts => pts.map(([x, y, r]) => dstar(x, y, r, r * .45, '#FFE08A')).join('');
+
+const HAIR = {
+  long: c => ({ back: dp('M88 100 Q86 36 150 36 Q214 36 212 100 L224 262 Q150 280 76 262Z', c), front: dp('M92 104 Q94 40 150 40 Q206 40 208 104 Q196 76 176 72 Q160 92 120 84 Q104 90 92 104Z', c) }),
+  curly: c => {
+    let back = ''; for (let a = -210; a <= 30; a += 24) { const r = a * Math.PI / 180; back += dc((150 + Math.cos(r) * 66).toFixed(1), (100 + Math.sin(r) * 66).toFixed(1), 28, c); }
+    back += dc(84, 168, 26, c) + dc(216, 168, 26, c) + dc(90, 202, 22, c) + dc(210, 202, 22, c);
+    return { back, front: dp('M94 100 Q92 46 150 44 Q208 46 206 100 Q196 78 182 84 Q172 64 150 72 Q128 64 118 84 Q104 78 94 100Z', c) };
+  },
+  bob: c => ({ back: dp('M84 100 Q84 32 150 32 Q216 32 216 100 L218 164 Q198 174 184 164 L116 164 Q102 174 82 164Z', c), front: dp('M92 98 Q96 42 150 42 Q204 42 208 98 Q206 82 200 82 L100 82 Q94 82 92 98Z', c) }),
+  ponytail: c => ({ back: dp('M196 52 Q266 38 254 142 Q248 204 226 240 Q232 172 212 120Z', c) + dc(204, 54, 9, '#FF8FC7'),
+    front: dp('M92 106 Q90 38 150 38 Q210 38 210 104 Q172 66 122 78 Q102 86 92 106Z', c) }),
+  buns: c => ({ back: dc(98, 50, 28, c) + dc(202, 50, 28, c), front: dp('M92 106 Q90 40 150 40 Q210 40 208 106 Q196 80 180 76 Q150 92 120 76 Q104 80 92 106Z', c) }),
+  braid: c => ({ back: '', front: dp('M92 106 Q90 38 150 38 Q210 38 210 106 Q172 66 122 78 Q102 86 92 106Z', c)
+    + Array.from({ length: 7 }, (_, i) => `<ellipse cx="${192 + i * 2}" cy="${150 + i * 24}" rx="15" ry="14" fill="${c}" stroke="${INK}" stroke-width="3"/>`).join('')
+    + dc(206, 316, 7, '#FF8FC7') + dp('M198 322 L214 322 L220 344 L192 344Z', c) }),
+  short: c => ({ back: dp('M88 110 Q86 36 150 36 Q214 36 212 110 Q210 132 202 142 L200 104 L100 104 L98 142 Q90 132 88 110Z', c),
+    front: dp('M92 100 Q94 40 150 40 Q206 40 208 100 Q190 70 150 76 Q120 84 92 100Z', c) }),
+};
+const TOPS = {
+  tee: c => dp('M108 194 Q150 184 192 194 L194 300 Q150 308 106 300Z', c) + both(dp(SLEEVE_SHORT, c)) + dl('M134 192 Q150 206 166 192'),
+  tank: c => dp('M118 194 L130 194 Q150 212 170 194 L182 194 L190 300 Q150 308 110 300Z', c) + dl('M114 270 L186 270', shade(c, -.25), 6),
+  hoodie: c => both(dp(SLEEVE_LONG, c)) + dp('M106 194 Q150 182 194 194 L196 318 Q150 326 104 318Z', c) + dp('M122 280 L178 280 L184 314 L116 314Z', shade(c, -.15))
+    + dp('M122 190 Q150 218 178 190 Q150 202 122 190Z', shade(c, -.2)) + dl('M142 204 L140 236') + dl('M158 204 L160 236'),
+  jacket: c => both(dp(SLEEVE_LONG, c)) + dp('M118 196 L182 196 L184 300 L116 300Z', '#FFFFFF') + both(dp('M106 194 Q124 186 134 190 L140 300 L104 300Z', c))
+    + both(dl('M134 192 L140 298', '#FFB703', 5)) + both(dl('M86 290 L106 294', '#FFB703', 5)) + dstar(150, 236, 12, 5, '#FFB703'),
+  bodice: c => dp('M112 196 Q150 188 188 196 L186 294 Q150 302 114 294Z', c) + dc(114, 204, 18, shade(c, .35)) + dc(186, 204, 18, shade(c, .35))
+    + dl('M128 200 L150 240 L172 200', shade(c, -.25)) + dc(150, 244, 5, '#FFE08A', 2),
+};
+const BOTTOMS = {
+  skirt: c => dp('M108 288 L192 288 L216 372 Q150 382 84 372Z', c) + dl('M108 296 L192 296', shade(c, -.25), 4),
+  pleated: c => dp('M108 288 L192 288 L208 352 L92 352Z', c) + ['M124 292 L116 352', 'M140 292 L136 352', 'M160 292 L164 352', 'M176 292 L184 352'].map(d => dl(d)).join(''),
+  tutu: c => dp('M108 288 L192 288 L222 330 L206 326 L212 344 L190 336 L188 352 L168 340 L160 356 L150 342 L140 356 L132 340 L112 352 L110 336 L88 344 L94 326 L78 330Z', c),
+  shorts: c => dp('M106 288 L194 288 L198 350 L156 352 L150 320 L144 352 L102 350Z', c),
+  pants: c => dp('M106 288 L194 288 L192 438 L156 438 L150 332 L144 438 L108 438Z', c) + dl('M150 296 L150 330'),
+};
+const DRESSES = {
+  gown: c => ({ body: dp('M114 274 L186 274 L256 446 Q150 472 44 446Z', c) + dp('M50 430 Q74 416 98 432 Q124 418 150 434 Q176 418 202 432 Q226 416 250 430 L256 446 Q150 472 44 446Z', shade(c, .45))
+    + dp('M112 196 Q150 188 188 196 L186 284 L114 284Z', c) + dc(114, 204, 18, shade(c, .35)) + dc(186, 204, 18, shade(c, .35)) + dp('M112 272 L188 272 L188 286 L112 286Z', shade(c, -.2))
+    + sparkles([[90, 380, 7], [150, 330, 6], [210, 380, 7], [126, 410, 5], [180, 404, 5]]) }),
+  summer: c => ({ body: dp('M116 196 Q150 206 184 196 L188 286 L222 384 Q150 396 78 384 L112 286Z', c) + [[130, 320], [170, 340], [150, 300], [118, 362], [184, 368]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="6" fill="#fff"/>`).join('') }),
+  stage: c => ({ body: dp('M110 196 Q150 186 190 196 L192 300 L216 354 Q150 364 84 354 L108 300Z', c) + dp('M108 292 L192 292 L192 306 L108 306Z', shade(c, -.25))
+    + both(dp('M86 340 L112 346 L108 358 L82 352Z', shade(c, .4))) + sparkles([[132, 226, 7], [170, 250, 6], [140, 330, 7], [182, 330, 5], [150, 270, 5]]) }),
+  hanbok: c => ({ body: dp('M108 226 L192 226 L238 452 Q150 468 62 452Z', c) + both(dp(SLEEVE_LONG, shade(c, .8))) + both(dp('M82 290 L106 293 L106 306 L82 302Z', c))
+    + dp('M106 194 Q150 184 194 194 L194 238 L106 238Z', shade(c, .8)) + dl('M128 194 L156 230', '#fff', 6) + dl('M128 194 L156 230')
+    + dp('M150 222 L134 280 L144 282 L154 232Z', shade(c, -.3)) + dp('M152 222 L166 272 L174 268 L158 228Z', shade(c, -.3)) }),
+  coat: c => ({ body: both(dp(SLEEVE_LONG, c)) + dp('M106 194 Q150 184 194 194 L206 386 L160 386 L150 300 L140 386 L94 386Z', c) + dl('M150 196 L150 298', '#FFB703', 4)
+    + dp('M104 268 L196 268 L197 282 L103 282Z', '#FFB703') + dp('M114 204 L190 266 L182 274 L108 214Z', '#E5484D') + both(dl('M86 292 L106 296', '#FFB703', 5)) + dstar(150, 275, 8, 3.5, '#fff') }),
+  mermaid: c => ({ hideLegs: true, body: dp('M106 286 L194 286 Q206 372 170 424 L204 466 Q174 458 150 446 Q126 458 96 466 L130 424 Q94 372 106 286Z', c)
+    + ['M118 316 q8 8 16 0 q8 8 16 0 q8 8 16 0 q8 8 16 0', 'M122 346 q7 7 14 0 q7 7 14 0 q7 7 14 0 q7 7 14 0', 'M130 376 q7 7 14 0 q7 7 14 0 q7 7 14 0'].map(d => dl(d, shade(c, -.35))).join('')
+    + dp('M106 286 L194 286 L194 298 L106 298Z', '#FFE08A') + dp('M116 214 Q130 192 148 214Z', shade(c, .45)) + dp('M152 214 Q170 192 184 214Z', shade(c, .45)) }),
+};
+const SHOES = {
+  sneakers: c => both(dp('M116 430 L148 430 Q154 446 150 454 L112 454 Q110 442 116 430Z', c) + dp('M111 452 L151 452 L151 459 L111 459Z', '#fff') + dl('M124 438 L140 438')),
+  flats: c => both(dp('M118 438 L150 438 Q156 450 150 456 L114 456 Q110 446 118 438Z', c) + dc(140, 442, 4, '#fff', 2)),
+  boots: c => both(dp('M119 372 L149 372 L150 440 Q158 448 154 458 L114 458 Q112 446 120 440Z', c) + dl('M120 384 L148 384', shade(c, .4), 4)),
+  heels: c => both(dp('M118 436 L150 436 Q160 446 156 454 L124 454 L122 462 L116 462Z', c) + dstar(136, 444, 5, 2.2, '#fff')),
+  none: () => '',
+};
+const ACCS = {
+  none: () => '',
+  bow: c => dp('M150 44 L112 24 L116 66Z', c) + dp('M150 44 L188 24 L184 66Z', c) + dc(150, 44, 9, shade(c, -.2)),
+  starclips: c => dstar(190, 66, 13, 5.5, c) + dstar(176, 46, 9, 4, c),
+  catears: c => both(dp('M98 68 L102 18 L136 46Z', c) + dp('M106 56 L108 30 L126 46Z', '#FF8FC7', 2)),
+  flowercrown: c => [-160, -140, -120, -100, -80, -60, -40, -20].map((a, i) => { const r = a * Math.PI / 180, x = (150 + Math.cos(r) * 58).toFixed(1), y = (104 + Math.sin(r) * 58).toFixed(1); return dc(x, y, 11, i % 2 ? '#fff' : c) + `<circle cx="${x}" cy="${y}" r="3.5" fill="#FFB703"/>`; }).join(''),
+  headphones: c => dl('M86 108 Q86 26 150 26 Q214 26 214 108', INK, 14) + dl('M86 108 Q86 26 150 26 Q214 26 214 108', c, 8) + dp('M76 88 L98 88 L98 132 L76 132Z', c) + dp('M202 88 L224 88 L224 132 L202 132Z', c),
+  tiara: c => `<polygon points="118,58 126,38 138,52 150,30 162,52 174,38 182,58" fill="${c}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>` + dc(150, 48, 5, '#FF8FC7', 2),
+  crown: c => `<polygon points="110,62 110,20 130,40 150,10 170,40 190,20 190,62" fill="${c}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>` + dc(130, 52, 5, '#E5484D', 2) + dc(150, 50, 6, '#3D7BFD', 2) + dc(170, 52, 5, '#22A95B', 2),
+};
+const HELD = {
+  none: () => '',
+  mic: c => dp('M203 298 L213 298 L215 342 L201 342Z', INK) + dc(208, 290, 13, c) + dl('M198 286 L218 286 M200 294 L216 294', shade(c, -.3), 2),
+  wand: c => dl('M206 312 L234 250', INK, 6) + dl('M206 312 L234 250', '#fff', 2) + dstar(238, 240, 17, 7.5, c),
+  lightstick: c => `<circle cx="216" cy="262" r="32" fill="${c}" opacity=".35"/>` + dp('M210 280 L222 280 L218 330 L206 330Z', INK) + dc(216, 262, 20, c) + dstar(216, 262, 9, 4, '#fff'),
+  fan: c => dp('M206 312 L166 258 Q208 230 250 258Z', c) + ['M206 312 L180 250', 'M206 312 L207 240', 'M206 312 L234 250'].map(d => dl(d, shade(c, -.3), 2)).join(''),
+  bouquet: c => dp('M206 320 L190 276 L232 276Z', '#5FD3A5') + [[198, 266], [214, 258], [228, 270], [208, 276], [190, 252]].map(([x, y], i) => dc(x, y, 11, i % 2 ? '#fff' : c) + `<circle cx="${x}" cy="${y}" r="3.5" fill="#FFB703"/>`).join(''),
+  sword: c => `<path d="M204 306 L250 186 L258 190 L214 310Z" fill="${c}" opacity=".35" transform="translate(-3 -2) scale(1.02)"/>` + dp('M206 306 L248 192 L256 196 L214 310Z', shade(c, .5)) + dl('M192 302 L226 316', INK, 9) + dl('M192 302 L226 316', '#FFB703', 5),
+};
+const BGS = {
+  plain: () => `<rect width="300" height="480" fill="#FFE3F0"/>` + [[40, 60], [250, 110], [60, 360], [240, 400], [150, 30]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="10" fill="#FFC6DE"/>`).join(''),
+  garden: () => `<rect width="300" height="480" fill="#BDE8FF"/>` + dc(252, 58, 26, '#FFC93C') + dp('M0 382 Q150 362 300 382 L300 480 L0 480Z', '#7ED37E')
+    + [[36, 420, '#FF8FC7'], [262, 432, '#FFB703'], [70, 456, '#fff']].map(([x, y, c]) => dc(x, y, 10, c, 2) + `<circle cx="${x}" cy="${y}" r="3" fill="#FFB703"/>`).join(''),
+  ballroom: () => `<rect width="300" height="480" fill="#FFD6EA"/>` + both(dp('M24 330 L24 130 Q56 84 88 130 L88 330Z', '#A6DDFF') + dl('M56 104 L56 330') + dl('M24 220 L88 220'))
+    + dp('M0 400 L300 400 L300 480 L0 480Z', '#E8B65A') + dl('M0 430 L300 430', '#D98E00', 2) + dl('M150 0 L150 26') + [126, 150, 174].map(x => dc(x, 34, 7, '#FFE08A', 2)).join(''),
+  stage: () => `<rect width="300" height="480" fill="#1B1F4A"/><polygon points="40,0 90,0 200,480 0,480" fill="#FFE08A" opacity=".18"/><polygon points="210,0 260,0 300,480 100,480" fill="#FF8FC7" opacity=".18"/>`
+    + dp('M0 412 L300 412 L300 480 L0 480Z', '#3B2F6E') + [40, 100, 160, 220, 270].map((x, i) => dc(x, 14, 8, ['#FFE08A', '#FF8FC7', '#5BB4FF', '#5FD3A5', '#C6B8FF'][i], 2)).join('') + sparkles([[30, 120, 6], [270, 180, 7], [250, 70, 5]]),
+  city: () => `<rect width="300" height="480" fill="#2B2470"/>` + dc(240, 60, 24, '#FFE08A') + sparkles([[40, 50, 5], [120, 90, 4], [180, 40, 5]])
+    + [[0, 250, 60], [56, 200, 52], [104, 290, 60], [196, 226, 56], [248, 184, 52]].map(([x, y, w]) => dp(`M${x} ${y} L${x + w} ${y} L${x + w} 480 L${x} 480Z`, '#3D3A8A', 2.5)
+      + Array.from({ length: 12 }, (_, k) => { const cx = x + 10 + (k % 2) * (w - 30), cy = y + 18 + Math.floor(k / 2) * 34; return (k + x) % 3 ? `<rect x="${cx}" y="${cy}" width="10" height="14" fill="#FFE08A"/>` : ''; }).join('')).join(''),
+  sea: () => `<rect width="300" height="480" fill="#4FB8E8"/><rect width="300" height="140" fill="#7FD0F5"/>` + dp('M0 430 Q150 410 300 432 L300 480 L0 480Z', '#FFE1A1')
+    + dp('M30 440 Q10 380 36 340 Q20 300 44 270 Q56 306 42 342 Q66 384 46 440Z', '#22A95B') + dp('M262 444 Q244 390 270 356 Q256 320 278 296 Q290 330 276 360 Q298 400 280 444Z', '#22A95B')
+    + [[60, 120, 9], [44, 90, 6], [250, 140, 8], [266, 104, 5]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#fff" stroke-width="3"/>`).join(''),
+};
+const DCATS = [
+  { k: 'hair', label: 'Hair', color: 'hairColor', colors: HAIR_COLORS, crop: '55 0 190 190', items: [['long', 'Long'], ['curly', 'Curly'], ['bob', 'Bob'], ['ponytail', 'Ponytail'], ['buns', 'Space buns'], ['braid', 'Braid'], ['short', 'Short']] },
+  { k: 'top', label: 'Tops', color: 'topColor', crop: '55 150 190 190', items: [['tee', 'T-shirt'], ['tank', 'Sporty top'], ['hoodie', 'Hoodie'], ['jacket', 'Idol jacket', 30], ['bodice', 'Princess top']] },
+  { k: 'bottom', label: 'Bottoms', color: 'bottomColor', crop: '55 255 190 205', items: [['skirt', 'Skirt'], ['pleated', 'Pleated skirt'], ['tutu', 'Tutu'], ['shorts', 'Shorts'], ['pants', 'Trousers']] },
+  { k: 'dress', label: 'Dresses', color: 'dressColor', crop: '20 150 260 320', items: [['none', 'Top and bottom'], ['summer', 'Summer dress'], ['gown', 'Ball gown', 40], ['stage', 'Stage dress', 40], ['hanbok', 'Hanbok', 40], ['coat', 'Hunter coat', 50], ['mermaid', 'Mermaid tail', 60]] },
+  { k: 'shoes', label: 'Shoes', color: 'shoesColor', crop: '95 360 110 110', items: [['sneakers', 'Trainers'], ['flats', 'Flats'], ['boots', 'Boots'], ['heels', 'Sparkle shoes', 25], ['none', 'Bare feet']] },
+  { k: 'acc', label: 'Hats & hair', color: 'accColor', crop: '55 -10 190 190', items: [['none', 'Nothing'], ['bow', 'Bow'], ['starclips', 'Star clips'], ['catears', 'Cat ears'], ['flowercrown', 'Flower crown', 20], ['headphones', 'Headphones', 25], ['tiara', 'Tiara', 30], ['crown', 'Crown', 50]] },
+  { k: 'held', label: 'Hold', color: 'heldColor', crop: '140 190 150 170', items: [['none', 'Nothing'], ['wand', 'Magic wand'], ['bouquet', 'Flowers'], ['fan', 'Fan'], ['mic', 'Microphone', 20], ['lightstick', 'Lightstick', 25], ['sword', 'Glow sword', 30]] },
+  { k: 'bg', label: 'Places', crop: '0 0 300 480', items: [['plain', 'Plain'], ['garden', 'Garden'], ['ballroom', 'Ballroom', 30], ['stage', 'Concert stage', 30], ['city', 'Night city', 30], ['sea', 'Under the sea', 30]] },
+  { k: 'skin', label: 'Skin', crop: '70 30 160 160', items: SKINS.map((c, i) => [i, ['Light', 'Fair', 'Medium', 'Tan', 'Brown', 'Deep'][i]]) },
+];
+function dollSVG(L, vb = '0 0 300 480') {
+  const skin = SKINS[L.skin] || SKINS[1], h = (HAIR[L.hair] || HAIR.long)(L.hairColor), d = L.dress !== 'none' && DRESSES[L.dress] ? DRESSES[L.dress](L.dressColor) : null;
+  let s = `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">` + (BGS[L.bg] || BGS.plain)() + h.back;
+  if (!(d && d.hideLegs)) s += both(`<rect x="122" y="318" width="24" height="126" rx="12" fill="${skin}" stroke="${INK}" stroke-width="3"/>`) + (SHOES[L.shoes] || SHOES.none)(L.shoesColor);
+  s += both(dp(ARM, skin)) + dp('M110 196 Q150 184 190 196 L192 330 Q150 338 108 330Z', skin) + `<rect x="139" y="146" width="22" height="52" rx="8" fill="${skin}" stroke="${INK}" stroke-width="3"/>`;
+  s += d ? d.body : (BOTTOMS[L.bottom] || BOTTOMS.skirt)(L.bottomColor) + (TOPS[L.top] || TOPS.tee)(L.topColor);
+  s += dc(94, 314, 12, skin) + dc(206, 314, 12, skin) + dc(93, 112, 10, skin) + dc(207, 112, 10, skin) + dc(150, 104, 58, skin);
+  s += `<ellipse cx="128" cy="112" rx="9" ry="12" fill="${INK}"/><ellipse cx="172" cy="112" rx="9" ry="12" fill="${INK}"/><circle cx="131" cy="107" r="3.4" fill="#fff"/><circle cx="175" cy="107" r="3.4" fill="#fff"/>`
+    + dl('M118 100 L113 95 M182 100 L187 95', INK, 2.5) + `<circle cx="114" cy="130" r="9" fill="#FF7A9A" opacity=".45"/><circle cx="186" cy="130" r="9" fill="#FF7A9A" opacity=".45"/>` + dl('M140 134 Q150 144 160 134');
+  s += h.front + (ACCS[L.acc] || ACCS.none)(L.accColor) + (HELD[L.held] || HELD.none)(L.heldColor);
+  return s + '</svg>';
+}
+let dCat = 'dress', dTry = null;
+function dollState() { const p = P(); p.dolls = p.dolls || { active: 'juniper', looks: {} }; return p.dolls; }
+const activeDoll = () => DOLLS.find(x => x.id === dollState().active) || DOLLS[0];
+const lookOf = doll => ({ ...DEFAULT_LOOK, ...doll.look, ...(dollState().looks[doll.id] || {}) });
+const dItem = (k, id) => DCATS.find(c => c.k === k).items.find(it => String(it[0]) === String(id));
+// An item can be worn if it's free, already unlocked with stars, or part of this character's own outfit
+function dFree(k, id) { const it = dItem(k, id), doll = activeDoll(); return !it || !it[2] || P().owned.includes(`dx-${k}-${id}`) || String(doll.look[k]) === String(id); }
+function setLook(k, v) { const st = dollState(), id = activeDoll().id; st.looks[id] = { ...(st.looks[id] || {}), [k]: v }; save(); }
+function renderDress() {
+  const p = P(); if (!p) return show('profiles');
+  const doll = activeDoll(), cat = DCATS.find(c => c.k === dCat), base = lookOf(doll);
+  const look = dTry ? { ...base, [dTry.k]: dTry.id, ...(dTry.k === 'top' || dTry.k === 'bottom' ? { dress: 'none' } : {}) } : base;
+  $('#dressStars').innerHTML = starPill(p.stars);
+  $('#dollStage').innerHTML = dollSVG(look);
+  $('#dollName').innerHTML = `<b>${doll.name}</b>${doll.team ? '<span>Starlight Hunters</span>' : ''}`;
+  $('#dollPick').innerHTML = DOLLS.map(d => `<button class="dollchip" data-doll="${d.id}" aria-pressed="${d.id === doll.id}" aria-label="${d.name}">${dollSVG(lookOf(d), '70 30 160 160')}<span>${d.name.replace('Princess ', '').replace(' the Mermaid', '')}</span></button>`).join('');
+  $('#dressTabs').innerHTML = DCATS.map(c => `<button class="chip" data-dcat="${c.k}" aria-pressed="${c.k === dCat}">${c.label}</button>`).join('');
+  $('#dressItems').innerHTML = cat.items.map(([id, name, price]) => {
+    const on = String(look[cat.k]) === String(id), free = dFree(cat.k, id);
+    const thumb = cat.k === 'skin' ? `<span class="swatch big" style="background:${SKINS[id]}"></span>` : dollSVG({ ...base, [cat.k]: id, ...(cat.k === 'top' || cat.k === 'bottom' ? { dress: 'none' } : {}) }, cat.crop);
+    return `<button class="item ditem" data-ditem="${id}" aria-pressed="${on}"><span class="thumb">${thumb}</span><span class="nm">${name}</span>${free ? '' : `<span class="pr">${STAR}${price}</span>`}</button>`;
+  }).join('');
+  const colors = cat.colors || CLOTH_COLORS, ck = cat.color;
+  $('#dressColors').hidden = !ck || (cat.k === 'dress' && look.dress === 'none') || (ck === 'accColor' && look.acc === 'none') || (ck === 'heldColor' && look.held === 'none') || (ck === 'shoesColor' && look.shoes === 'none');
+  if (ck) $('#dressColors').innerHTML = `<span class="lbl">Colour</span>` + colors.map(c => `<button class="swatch" data-dcolor="${c}" style="background:${c}" aria-label="Colour" aria-pressed="${look[ck] === c}"></button>`).join('');
+  const un = $('#dressUnlock');
+  if (dTry) {
+    const [, name, price] = dItem(dTry.k, dTry.id); un.hidden = false;
+    un.innerHTML = p.stars >= price ? `<button class="btn gold" id="dUnlock">Unlock ${name} for ${price} ${STAR.replace('<svg', '<svg style="width:1.2em;height:1.2em"')}</button><p class="hint">Trying it on. Unlock it to keep it.</p>`
+      : `<button class="btn" disabled>${name} costs ${price} stars</button><p class="hint">You need ${price - p.stars} more stars. Play a quiz round to earn them!</p>`;
+  } else un.hidden = true;
+}
+function dressPick(id) {
+  const k = dCat, v = k === 'skin' ? +id : id;
+  if (!dFree(k, v)) { dTry = { k, id: v }; sfx.tap(); return renderDress(); }
+  dTry = null; setLook(k, v);
+  if (k === 'top' || k === 'bottom') setLook('dress', 'none');
+  sfx.tap(); renderDress();
+}
+
 /* ---------- Events ---------- */
 document.addEventListener('click', e => {
   const t = e.target.closest('button'); if (!t) return;
   if (t.matches('.pcard[data-id]')) { S.current = t.dataset.id; save(); sfx.tap(); return show('home'); }
+  // Colouring
+  if (t.dataset.play === 'colour') { sfx.tap(); cpPage = null; return show('colour'); }
+  if (t.id === 'colourBack') { if (cpPage) { cpPage = null; return renderColour(); } return show('home'); }
+  if (t.dataset.cptab) { cpCat = t.dataset.cptab; return renderColour(); }
+  if (t.dataset.page) { cpPage = t.dataset.page; cpHistory = []; cpConfirm = false; sfx.tap(); return renderColour(); }
+  if (t.dataset.swatch) { cpColor = t.dataset.swatch; return renderSwatches(); }
+  if (t.id === 'cpUndo') return cpUndo();
+  if (t.id === 'cpRestart') {
+    if (!cpConfirm) { cpConfirm = true; return renderSwatches(); }
+    P().colouring[cpPage] = {}; cpHistory = []; cpConfirm = false; save(); return renderColour();
+  }
+  if (t.id === 'cpDone') { sfx.level(); confetti(80); toast('Lovely! Your picture is saved.'); cpPage = null; return renderColour(); }
+  // Dress-up
+  if (t.dataset.play === 'dress') { sfx.tap(); dTry = null; return show('dress'); }
+  if (t.id === 'dressBack') { dTry = null; return show('home'); }
+  if (t.dataset.doll) { dollState().active = t.dataset.doll; dTry = null; save(); sfx.tap(); return renderDress(); }
+  if (t.dataset.dcat) { dCat = t.dataset.dcat; dTry = null; return renderDress(); }
+  if (t.dataset.ditem !== undefined) return dressPick(t.dataset.ditem);
+  if (t.dataset.dcolor) { setLook(DCATS.find(c => c.k === dCat).color, t.dataset.dcolor); sfx.tap(); return renderDress(); }
+  if (t.id === 'dUnlock' && dTry) {
+    const p = P(), [, name, price] = dItem(dTry.k, dTry.id); if (p.stars < price) return;
+    p.stars -= price; p.owned.push(`dx-${dTry.k}-${dTry.id}`); setLook(dTry.k, dTry.id);
+    if (dTry.k === 'top' || dTry.k === 'bottom') setLook('dress', 'none');
+    dTry = null; save(); sfx.coin(); confetti(80); toast(`You unlocked the ${name}!`); return renderDress();
+  }
   if (t.id === 'newPlayer' || t.id === 'guAdd') { draft = { age: 1, color: 'c-sun' }; $('#pname').value = ''; return show('create'); }
   if (t.id === 'createCancel') return show(S.profiles.length ? 'profiles' : 'create');
   if (t.dataset.age) { draft.age = +t.dataset.age; return renderCreate(); }
@@ -1283,6 +1748,7 @@ document.addEventListener('change', e => {
   if (t.id === 'voiceSel') { S.voice = t.value; save(); speak('Hello! I will read the questions to you.'); }
   if (t.dataset.read) { const p = S.profiles.find(x => x.id === t.dataset.read); p.readAloud = t.checked; save(); }
 });
+$('#cpBoard').addEventListener('click', e => cpFillAt(e.target));
 $('#createForm').addEventListener('submit', e => {
   e.preventDefault();
   const name = $('#pname').value.trim();

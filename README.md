@@ -17,6 +17,8 @@ Each child's progress is saved on that iPad.
 - **Maths, Words, Numbers and Geography**, each with 10 levels. A child moves up after 4 right answers in a row and back down after 2 wrong in a row.
 - **Step-by-step explanations** after every answer, right or wrong, with an option to read them aloud.
 - **Stars and the Bud Shop:** colours, hats, glasses, capes, wings, pets and worlds to buy. The bud grows from a seed to a Mighty Bloom as stars are earned.
+- **Colouring:** 12 pictures (nature, animals, princesses and magic). Tap a shape to fill it, including rainbow and glitter. Pictures save automatically.
+- **Dress-up:** six original characters (Princess Juniper, Princess Rosa, Marina the Mermaid, and Hana, Yuna and Dara of the Starlight Hunters, a K-pop idol trio who battle gloom monsters). Change hair, tops, bottoms, dresses, shoes, accessories, props, places and skin tone, each in many colours. Special items unlock with stars.
 - **Grown-ups area** (hold the button): levels and accuracy per subject, manual level changes, reading voice, sound, and player management.
 
 ## Files
