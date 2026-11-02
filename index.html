@@ -125,7 +125,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 /* Dress-up */
 .dresswrap{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-content:start}
 @media (min-width:820px){.dresswrap{grid-template-columns:minmax(280px,4fr) minmax(0,6fr)}}
-.dollstage{border-radius:20px;border:3px solid var(--ink);overflow:hidden;aspect-ratio:300/480;max-height:calc(100vh - 340px);margin:0 auto;max-width:100%}
+.dollstage{border-radius:20px;border:3px solid var(--ink);overflow:hidden;aspect-ratio:300/480;max-height:calc(100vh - 400px);margin:0 auto;max-width:100%}
 .dollstage svg{width:100%;height:100%;display:block}
 .dollname{display:flex;flex-direction:column;align-items:center;text-align:center}
 .dollname b{font-family:var(--f-display);font-weight:400;font-size:1.5rem}
@@ -135,6 +135,86 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .dollchip svg{width:56px;height:56px;border-radius:50%}
 .dollchip[aria-pressed="true"]{background:#FFF1CC;outline:3px solid var(--gold)}
 .ditem .thumb{background:var(--card-soft)}
+
+/* Glam dressing room */
+#s-dress{--glam:#FF5FA2;--glam-deep:#C93277;--glam-soft:#FFE3F0}
+#s-dress .chip[aria-pressed="true"]{background:var(--glam);color:#fff}
+#s-dress .item[aria-pressed="true"]{background:var(--glam-soft);outline-color:var(--glam)}
+.vanity{position:relative;background:linear-gradient(160deg,#FFE3F0,#EBDCFF);padding:24px}
+.vanity::before{content:"";position:absolute;inset:5px;border-radius:24px;pointer-events:none;
+  background:radial-gradient(circle,#FFF8D6 0 3.5px,#FFC93C 4.5px,transparent 5.5px) 0 0/24px 14px repeat-x,
+  radial-gradient(circle,#FFF8D6 0 3.5px,#FFC93C 4.5px,transparent 5.5px) 0 100%/24px 14px repeat-x,
+  radial-gradient(circle,#FFF8D6 0 3.5px,#FFC93C 4.5px,transparent 5.5px) 0 0/14px 24px repeat-y,
+  radial-gradient(circle,#FFF8D6 0 3.5px,#FFC93C 4.5px,transparent 5.5px) 100% 0/14px 24px repeat-y}
+.modes{display:inline-flex;align-self:flex-start;border:3px solid var(--ink);border-radius:999px;background:var(--card);padding:4px;gap:4px;box-shadow:0 4px 0 var(--ink)}
+.mode{font-family:var(--f-display);font-size:1.05rem;border:0;border-radius:999px;padding:.4em 1em;background:transparent}
+.mode[aria-pressed="true"]{background:#FF5FA2;color:#fff}
+.showbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(90deg,#3A1C5C,#7A2E8E);color:#fff;border:3px solid var(--ink);border-radius:22px;padding:10px 14px;box-shadow:0 5px 0 var(--ink)}
+.sbtheme{display:flex;flex-direction:column;flex:1;min-width:180px}
+.sbtheme span{font-family:var(--f-display);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:#FFC6DE}
+.sbtheme b{font-family:var(--f-display);font-weight:400;font-size:1.5rem;line-height:1.1}
+.sbtheme small{font-size:.95rem;opacity:.9}
+.sbtime{font-family:var(--f-display);font-size:1.8rem;background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:14px;padding:0 .4em;font-variant-numeric:tabular-nums}
+.sbtime.urgent{background:var(--bad);color:#fff;animation:pop .5s infinite}
+
+/* Fashion show stage */
+.showbody{flex:1;display:flex;flex-direction:column;min-height:0}
+.reveal,.judging,.results-show{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;
+  background:radial-gradient(circle at 50% 0%,#7A2E8E,#2A1448 70%);color:#fff;border:3px solid var(--ink);border-radius:28px;padding:24px 16px;box-shadow:0 6px 0 var(--ink)}
+.reveal h1,.results-show h1{font-size:clamp(2rem,5vw,3rem)}
+.eyebrow{margin:0;font-family:var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:#FFC6DE}
+.themecard{display:flex;flex-direction:column;gap:6px;background:linear-gradient(135deg,#FF5FA2,#FFB703);color:var(--ink);border:4px solid #fff;border-radius:24px;padding:22px 34px;box-shadow:0 0 0 4px var(--ink),0 10px 30px rgba(255,95,162,.5);animation:spinin .9s cubic-bezier(.2,1.4,.4,1)}
+.themecard b{font-family:var(--f-display);font-weight:400;font-size:clamp(2rem,6vw,3.2rem);line-height:1}
+.themecard span{font-weight:700;font-size:1.1rem}
+@keyframes spinin{from{transform:scale(.2) rotate(-200deg);opacity:0}}
+.toggle.light{color:#fff}
+.btn.ghost.light{color:#FFC6DE}
+.showbody .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.runway{position:relative;flex:1;min-height:440px;border:3px solid var(--ink);border-radius:28px;overflow:hidden;background:linear-gradient(#140B30,#3A1C5C)}
+.runway .spot{position:absolute;inset:0;background:radial-gradient(ellipse 40% 60% at 50% 70%,rgba(255,236,170,.35),transparent 70%)}
+.catwalk{position:absolute;left:50%;bottom:0;width:80%;height:72%;transform:translateX(-50%);background:linear-gradient(#5B2A86,#FF5FA2);clip-path:polygon(43% 0,57% 0,100% 100%,0 100%)}
+.crowd{position:absolute;bottom:0;width:22%;height:20%;background:radial-gradient(circle at 50% 30%,#0C0620 0 16px,transparent 17px) 0 0/40px 44px,radial-gradient(circle at 50% 30%,#0C0620 0 16px,transparent 17px) 20px 22px/40px 44px}
+.crowd.left{left:0}.crowd.right{right:0}
+.walker{position:absolute;left:50%;bottom:4%;height:74%;aspect-ratio:300/480;transform-origin:50% 100%;transform:translateX(-50%);animation:catwalk 4s ease-out both}
+.walker svg{width:100%;height:100%;animation:strut .5s ease-in-out 8 alternate}
+@keyframes catwalk{from{transform:translateX(-50%) translateY(-58%) scale(.32)}to{transform:translateX(-50%) translateY(0) scale(1)}}
+@keyframes strut{from{transform:rotate(-2.5deg) translateY(0)}to{transform:rotate(2.5deg) translateY(-6px)}}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;animation:flash .7s 4s 3}
+@keyframes flash{0%,100%{opacity:0}15%{opacity:.75}}
+.announce{position:absolute;top:14px;left:0;right:0;margin:0;text-align:center;color:#fff;font-family:var(--f-display);font-size:1.4rem}
+.announce b{font-weight:400;color:#FFC6DE}
+.skip{position:absolute;top:12px;right:12px}
+.judgerow{display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap}
+.jlook{width:min(200px,40vw);aspect-ratio:300/480;border:3px solid #fff;border-radius:18px;overflow:hidden}
+.jlook svg{width:100%;height:100%;display:block}
+.judges{display:flex;flex-direction:column;gap:10px;text-align:left}
+.judge{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25);border-radius:18px;padding:8px 14px 8px 8px;animation:slidein .5s both}
+@keyframes slidein{from{opacity:0;transform:translateX(30px)}}
+.jbud{width:70px;height:64px;flex:none;background:#fff;border-radius:14px;overflow:hidden}
+.jbud svg{width:100%;height:100%}
+.judge b{font-family:var(--f-display);font-weight:400;font-size:1.1rem}
+.judge p{margin:0;font-weight:700}
+.jstars{display:flex;gap:2px}
+.jstars i{width:26px;height:26px;opacity:.25;filter:grayscale(1)}
+.jstars i.on{animation:staron .35s both;opacity:1;filter:none}
+.jstars svg{width:100%;height:100%}
+@keyframes staron{from{opacity:.25;transform:scale(.4)}60%{transform:scale(1.3)}to{opacity:1}}
+.loved{background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:18px;padding:10px 18px;max-width:560px}
+.loved span{font-family:var(--f-display);font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+.loved p{margin:4px 0 0;font-weight:700;font-size:1.15rem}
+.prize{display:flex;align-items:center;gap:8px;margin:0;font-family:var(--f-display);font-size:1.6rem}
+.prize svg{width:1.4em;height:1.4em}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;width:100%;max-width:640px}
+.pod{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0}
+.pdoll{width:min(150px,26vw);aspect-ratio:300/480;border-radius:14px;overflow:hidden;border:3px solid #fff}
+.pdoll svg{width:100%;height:100%;display:block}
+.pblock{width:100%;display:flex;flex-direction:column;align-items:center;gap:2px;border:3px solid var(--ink);border-radius:14px 14px 0 0;padding:8px 4px;color:var(--ink);margin-top:8px}
+.p1 .pblock{background:#FFC93C;min-height:110px}.p2 .pblock{background:#D9DEE8;min-height:80px}.p3 .pblock{background:#E8A87C;min-height:60px}
+.pod.me .pdoll{border-color:#FF5FA2;box-shadow:0 0 0 4px #FF5FA2}
+.place{font-family:var(--f-display);font-size:1.6rem}
+.pblock b{font-family:var(--f-display);font-weight:400;font-size:.95rem;overflow-wrap:anywhere}
+.ptot{display:inline-flex;align-items:center;gap:3px;font-weight:700}
+.ptot svg{width:1.1em;height:1.1em}
 .colorrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .colorrow .lbl{font-family:var(--f-display);font-size:1.05rem;margin-right:4px}
 .homeactions{display:flex;gap:12px;flex-wrap:wrap}
@@ -443,8 +523,13 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
       <span class="grow"></span>
       <span class="starpill" id="dressStars"></span>
     </div>
+    <div class="modes" id="dressModes" role="group" aria-label="Dress-up mode">
+      <button class="mode" aria-pressed="true">Free dress-up</button>
+      <button class="mode" id="modeShow" aria-pressed="false">Fashion show</button>
+    </div>
+    <div class="showbar" id="showBar" hidden></div>
     <div class="dresswrap">
-      <div class="stagecard">
+      <div class="stagecard vanity">
         <div class="dollstage" id="dollStage"></div>
         <div class="dollname" id="dollName"></div>
         <div class="dollpick" id="dollPick"></div>
@@ -456,6 +541,11 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
         <div class="shopaction" id="dressUnlock" hidden></div>
       </div>
     </div>
+  </section>
+
+  <!-- Fashion show: theme reveal, runway, judges, podium -->
+  <section class="screen" id="s-show" hidden>
+    <div id="showBody" class="showbody"></div>
   </section>
 
   <!-- Grown-ups -->
@@ -1110,10 +1200,11 @@ function floatGain(n) {
 /* ---------- Screens ---------- */
 let current = 'profiles';
 function show(name) {
+  if (FS && name !== 'dress' && name !== 'show') endShow();
   current = name;
   document.querySelectorAll('.screen').forEach(el => { el.hidden = el.id !== 's-' + name; });
   try { speechSynthesis.cancel(); } catch (e) {}
-  ({ profiles: renderProfiles, create: renderCreate, home: renderHome, shop: renderShop, gu: renderGU, colour: renderColour, dress: renderDress })[name]?.();
+  ({ profiles: renderProfiles, create: renderCreate, home: renderHome, shop: renderShop, gu: renderGU, colour: renderColour, dress: renderDress, show: renderShowScreen })[name]?.();
   const scr = $('#s-' + name); if (scr) scr.scrollTop = 0;
 }
 const starPill = n => `${STAR}<span>${fmt(n)}</span>`;
@@ -1501,9 +1592,9 @@ function cpUndo() {
 // Original characters: two princesses, a mermaid, and the Starlight Hunters, a K-pop idol trio who battle gloom monsters.
 const SKINS = ['#FFE0C7', '#F5C9A6', '#E0A880', '#C68863', '#9C6644', '#6E4530'];
 const HAIR_COLORS = ['#1B1B2A', '#5A3825', '#A0522D', '#E8B65A', '#F7E39B', '#D9DEE8', '#E5484D', '#FF8FC7', '#A77BF3', '#5BB4FF', '#5FD3A5'];
-const CLOTH_COLORS = ['#E5484D', '#FF6A4D', '#FFB703', '#FFE08A', '#22A95B', '#5FD3A5', '#3D7BFD', '#5BB4FF', '#9B59D0', '#C6B8FF', '#FF8FC7', '#FFD6EA', '#1B2A4A', '#FFFFFF'];
+const CLOTH_COLORS = ['#E5484D', '#FF6A4D', '#FFB703', '#FFE08A', '#22A95B', '#5FD3A5', '#3D7BFD', '#5BB4FF', '#9B59D0', '#C6B8FF', '#FF5FA2', '#FF8FC7', '#FFD6EA', '#1B2A4A', '#FFFFFF'];
 const DEFAULT_LOOK = { skin: 1, hair: 'long', hairColor: '#5A3825', top: 'tee', topColor: '#5BB4FF', bottom: 'skirt', bottomColor: '#FF8FC7', dress: 'none', dressColor: '#FF8FC7',
-  shoes: 'sneakers', shoesColor: '#FFFFFF', acc: 'none', accColor: '#FFB703', held: 'none', heldColor: '#FF8FC7', bg: 'plain' };
+  shoes: 'sneakers', shoesColor: '#FFFFFF', acc: 'none', accColor: '#FFB703', held: 'none', heldColor: '#FF8FC7', bg: 'plain', face: 'natural', faceColor: '#FF5FA2' };
 const DOLLS = [
   { id: 'juniper', name: 'Princess Juniper', look: { skin: 4, hair: 'curly', hairColor: '#1B1B2A', dress: 'gown', dressColor: '#FFB703', shoes: 'heels', shoesColor: '#FFB703', acc: 'tiara', accColor: '#FFB703', held: 'wand', heldColor: '#FFB703', bg: 'ballroom' } },
   { id: 'rosa', name: 'Princess Rosa', look: { skin: 1, hair: 'long', hairColor: '#5A3825', dress: 'gown', dressColor: '#FF8FC7', shoes: 'flats', shoesColor: '#FF8FC7', acc: 'flowercrown', accColor: '#FF8FC7', held: 'bouquet', heldColor: '#E5484D', bg: 'garden' } },
@@ -1617,6 +1708,7 @@ const BGS = {
 };
 const DCATS = [
   { k: 'hair', label: 'Hair', color: 'hairColor', colors: HAIR_COLORS, crop: '55 0 190 190', items: [['long', 'Long'], ['curly', 'Curly'], ['bob', 'Bob'], ['ponytail', 'Ponytail'], ['buns', 'Space buns'], ['braid', 'Braid'], ['short', 'Short']] },
+  { k: 'face', label: 'Makeup', color: 'faceColor', crop: '70 50 160 120', items: [['natural', 'Natural'], ['glam', 'Glam'], ['hearts', 'Heart stickers'], ['star', 'Star face paint', 15], ['sparkle', 'Sparkle', 20]] },
   { k: 'top', label: 'Tops', color: 'topColor', crop: '55 150 190 190', items: [['tee', 'T-shirt'], ['tank', 'Sporty top'], ['hoodie', 'Hoodie'], ['jacket', 'Idol jacket', 30], ['bodice', 'Princess top']] },
   { k: 'bottom', label: 'Bottoms', color: 'bottomColor', crop: '55 255 190 205', items: [['skirt', 'Skirt'], ['pleated', 'Pleated skirt'], ['tutu', 'Tutu'], ['shorts', 'Shorts'], ['pants', 'Trousers']] },
   { k: 'dress', label: 'Dresses', color: 'dressColor', crop: '20 150 260 320', items: [['none', 'Top and bottom'], ['summer', 'Summer dress'], ['gown', 'Ball gown', 40], ['stage', 'Stage dress', 40], ['hanbok', 'Hanbok', 40], ['coat', 'Hunter coat', 50], ['mermaid', 'Mermaid tail', 60]] },
@@ -1626,17 +1718,27 @@ const DCATS = [
   { k: 'bg', label: 'Places', crop: '0 0 300 480', items: [['plain', 'Plain'], ['garden', 'Garden'], ['ballroom', 'Ballroom', 30], ['stage', 'Concert stage', 30], ['city', 'Night city', 30], ['sea', 'Under the sea', 30]] },
   { k: 'skin', label: 'Skin', crop: '70 30 160 160', items: SKINS.map((c, i) => [i, ['Light', 'Fair', 'Medium', 'Tan', 'Brown', 'Deep'][i]]) },
 ];
-function dollSVG(L, vb = '0 0 300 480') {
+function dollSVG(L, vb = '0 0 300 480', withBg = true) {
   const skin = SKINS[L.skin] || SKINS[1], h = (HAIR[L.hair] || HAIR.long)(L.hairColor), d = L.dress !== 'none' && DRESSES[L.dress] ? DRESSES[L.dress](L.dressColor) : null;
-  let s = `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">` + (BGS[L.bg] || BGS.plain)() + h.back;
+  let s = `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">` + (withBg ? (BGS[L.bg] || BGS.plain)() : '') + h.back;
   if (!(d && d.hideLegs)) s += both(`<rect x="122" y="318" width="24" height="126" rx="12" fill="${skin}" stroke="${INK}" stroke-width="3"/>`) + (SHOES[L.shoes] || SHOES.none)(L.shoesColor);
   s += both(dp(ARM, skin)) + dp('M110 196 Q150 184 190 196 L192 330 Q150 338 108 330Z', skin) + `<rect x="139" y="146" width="22" height="52" rx="8" fill="${skin}" stroke="${INK}" stroke-width="3"/>`;
   s += d ? d.body : (BOTTOMS[L.bottom] || BOTTOMS.skirt)(L.bottomColor) + (TOPS[L.top] || TOPS.tee)(L.topColor);
   s += dc(94, 314, 12, skin) + dc(206, 314, 12, skin) + dc(93, 112, 10, skin) + dc(207, 112, 10, skin) + dc(150, 104, 58, skin);
-  s += `<ellipse cx="128" cy="112" rx="9" ry="12" fill="${INK}"/><ellipse cx="172" cy="112" rx="9" ry="12" fill="${INK}"/><circle cx="131" cy="107" r="3.4" fill="#fff"/><circle cx="175" cy="107" r="3.4" fill="#fff"/>`
-    + dl('M118 100 L113 95 M182 100 L187 95', INK, 2.5) + `<circle cx="114" cy="130" r="9" fill="#FF7A9A" opacity=".45"/><circle cx="186" cy="130" r="9" fill="#FF7A9A" opacity=".45"/>` + dl('M140 134 Q150 144 160 134');
-  s += h.front + (ACCS[L.acc] || ACCS.none)(L.accColor) + (HELD[L.held] || HELD.none)(L.heldColor);
+  s += faceSVG(L) + h.front + (ACCS[L.acc] || ACCS.none)(L.accColor) + (HELD[L.held] || HELD.none)(L.heldColor);
   return s + '</svg>';
+}
+const heart = (x, y, c) => `<path d="M${x} ${y + 6} C${x - 10} ${y - 2} ${x - 6} ${y - 10} ${x} ${y - 4} C${x + 6} ${y - 10} ${x + 10} ${y - 2} ${x} ${y + 6}Z" fill="${c}" stroke="${INK}" stroke-width="1.5"/>`;
+function faceSVG(L) {
+  const f = L.face || 'natural', c = L.faceColor || '#FF5FA2', glam = f === 'glam' || f === 'sparkle';
+  let s = glam ? `<ellipse cx="128" cy="101" rx="14" ry="8" fill="${c}" opacity=".55"/><ellipse cx="172" cy="101" rx="14" ry="8" fill="${c}" opacity=".55"/>` : '';
+  s += `<ellipse cx="128" cy="112" rx="9" ry="12" fill="${INK}"/><ellipse cx="172" cy="112" rx="9" ry="12" fill="${INK}"/><circle cx="131" cy="107" r="3.4" fill="#fff"/><circle cx="175" cy="107" r="3.4" fill="#fff"/>`;
+  s += glam ? dl('M117 103 L109 97 M120 100 L115 92 M183 103 L191 97 M180 100 L185 92', INK, 2.5) : dl('M118 100 L113 95 M182 100 L187 95', INK, 2.5);
+  s += f === 'hearts' ? heart(114, 132, c) + heart(186, 132, c) : `<circle cx="114" cy="130" r="9" fill="#FF7A9A" opacity=".45"/><circle cx="186" cy="130" r="9" fill="#FF7A9A" opacity=".45"/>`;
+  s += glam ? `<path d="M141 134 Q145 130 150 133 Q155 130 159 134 Q150 146 141 134Z" fill="${c}" stroke="${INK}" stroke-width="2"/>` : dl('M140 134 Q150 144 160 134');
+  if (f === 'sparkle') s += dstar(104, 98, 6, 2.6, '#FFE08A') + dstar(196, 96, 6, 2.6, '#FFE08A') + dstar(110, 144, 4, 1.8, '#fff') + dstar(190, 144, 4, 1.8, '#fff');
+  if (f === 'star') s += `<polygon points="${starPts(173, 112, 24, 11)}" fill="none" stroke="${c}" stroke-width="4" stroke-linejoin="round"/>`;
+  return s;
 }
 let dCat = 'dress', dTry = null;
 function dollState() { const p = P(); p.dolls = p.dolls || { active: 'juniper', looks: {} }; return p.dolls; }
@@ -1651,6 +1753,7 @@ function renderDress() {
   const doll = activeDoll(), cat = DCATS.find(c => c.k === dCat), base = lookOf(doll);
   const look = dTry ? { ...base, [dTry.k]: dTry.id, ...(dTry.k === 'top' || dTry.k === 'bottom' ? { dress: 'none' } : {}) } : base;
   $('#dressStars').innerHTML = starPill(p.stars);
+  renderShowBar();
   $('#dollStage').innerHTML = dollSVG(look);
   $('#dollName').innerHTML = `<b>${doll.name}</b>${doll.team ? '<span>Starlight Hunters</span>' : ''}`;
   $('#dollPick').innerHTML = DOLLS.map(d => `<button class="dollchip" data-doll="${d.id}" aria-pressed="${d.id === doll.id}" aria-label="${d.name}">${dollSVG(lookOf(d), '70 30 160 160')}<span>${d.name.replace('Princess ', '').replace(' the Mermaid', '')}</span></button>`).join('');
@@ -1661,7 +1764,7 @@ function renderDress() {
     return `<button class="item ditem" data-ditem="${id}" aria-pressed="${on}"><span class="thumb">${thumb}</span><span class="nm">${name}</span>${free ? '' : `<span class="pr">${STAR}${price}</span>`}</button>`;
   }).join('');
   const colors = cat.colors || CLOTH_COLORS, ck = cat.color;
-  $('#dressColors').hidden = !ck || (cat.k === 'dress' && look.dress === 'none') || (ck === 'accColor' && look.acc === 'none') || (ck === 'heldColor' && look.held === 'none') || (ck === 'shoesColor' && look.shoes === 'none');
+  $('#dressColors').hidden = !ck || (cat.k === 'dress' && look.dress === 'none') || (ck === 'accColor' && look.acc === 'none') || (ck === 'heldColor' && look.held === 'none') || (ck === 'shoesColor' && look.shoes === 'none') || (ck === 'faceColor' && look.face === 'natural');
   if (ck) $('#dressColors').innerHTML = `<span class="lbl">Colour</span>` + colors.map(c => `<button class="swatch" data-dcolor="${c}" style="background:${c}" aria-label="Colour" aria-pressed="${look[ck] === c}"></button>`).join('');
   const un = $('#dressUnlock');
   if (dTry) {
@@ -1676,6 +1779,156 @@ function dressPick(id) {
   dTry = null; setLook(k, v);
   if (k === 'top' || k === 'bottom') setLook('dress', 'none');
   sfx.tap(); renderDress();
+}
+
+/* ---------- Fashion show ---------- */
+// A theme is revealed, the player dresses up against the clock, walks the runway, and three bud judges score the look.
+const THEMES = [
+  { id: 'royal', name: 'Royal Ball', tip: 'Think crowns, gowns and gold.', tags: ['royal', 'fancy'], colors: ['#FFB703', '#FFE08A', '#FF8FC7', '#9B59D0', '#FFFFFF'] },
+  { id: 'kpop', name: 'K-pop Concert', tip: 'Think sparkles, stage outfits and a microphone.', tags: ['kpop', 'party'], colors: ['#9B59D0', '#FF5FA2', '#1B2A4A', '#C6B8FF', '#5BB4FF'] },
+  { id: 'beach', name: 'Beach Day', tip: 'Think sunny colours, shorts and bare feet.', tags: ['beach', 'summer'], colors: ['#FFE08A', '#FFB703', '#5BB4FF', '#5FD3A5', '#FF6A4D'] },
+  { id: 'sea', name: 'Under the Sea', tip: 'Think mermaid tails and ocean blues.', tags: ['sea', 'fairy'], colors: ['#5BB4FF', '#3D7BFD', '#5FD3A5', '#C6B8FF', '#FFD6EA'] },
+  { id: 'garden', name: 'Garden Party', tip: 'Think flowers, pretty dresses and soft colours.', tags: ['garden', 'cute'], colors: ['#FF8FC7', '#FFD6EA', '#22A95B', '#5FD3A5', '#FFE08A'] },
+  { id: 'hero', name: 'Superhero', tip: 'Think boots, bold colours and something powerful to hold.', tags: ['hero', 'sporty'], colors: ['#E5484D', '#3D7BFD', '#1B2A4A', '#FFB703'] },
+  { id: 'winter', name: 'Winter Wonderland', tip: 'Think cosy layers, boots and icy colours.', tags: ['winter', 'cozy'], colors: ['#FFFFFF', '#5BB4FF', '#C6B8FF', '#1B2A4A'] },
+  { id: 'fairy', name: 'Fairy Tale', tip: 'Think wands, tutus and flower crowns.', tags: ['fairy', 'cute'], colors: ['#FFD6EA', '#C6B8FF', '#FF8FC7', '#5FD3A5', '#FFE08A'] },
+  { id: 'sporty', name: 'Sports Day', tip: 'Think trainers, sporty tops and bright colours.', tags: ['sporty', 'casual'], colors: ['#E5484D', '#3D7BFD', '#22A95B', '#FFB703', '#FFFFFF'] },
+  { id: 'pyjama', name: 'Pyjama Party', tip: 'Think cosy, cute and comfy.', tags: ['cozy', 'cute'], colors: ['#FFD6EA', '#C6B8FF', '#5BB4FF', '#FFE08A'] },
+  { id: 'rainbow', name: 'Rainbow', tip: 'Wear as many different colours as you can!', tags: ['party', 'cute'], colors: [], special: 'rainbow' },
+  { id: 'mono', name: 'All One Colour', tip: 'Pick one colour and wear it on everything.', tags: [], colors: [], special: 'mono' },
+];
+const ITEM_TAGS = {
+  'top:tee': ['casual', 'beach', 'sporty'], 'top:tank': ['sporty', 'beach', 'summer'], 'top:hoodie': ['casual', 'cozy', 'winter', 'sporty'], 'top:jacket': ['kpop', 'party', 'hero'], 'top:bodice': ['royal', 'fancy', 'fairy'],
+  'bottom:skirt': ['casual', 'party', 'garden', 'cute'], 'bottom:pleated': ['kpop', 'cute'], 'bottom:tutu': ['party', 'fairy', 'cute'], 'bottom:shorts': ['beach', 'summer', 'sporty'], 'bottom:pants': ['casual', 'winter', 'sporty', 'hero', 'cozy'],
+  'dress:summer': ['beach', 'summer', 'garden', 'cute'], 'dress:gown': ['royal', 'fancy', 'party', 'fairy'], 'dress:stage': ['kpop', 'party', 'fancy'], 'dress:hanbok': ['royal', 'kpop', 'fancy'], 'dress:coat': ['hero', 'winter', 'kpop'], 'dress:mermaid': ['sea', 'fairy'],
+  'shoes:sneakers': ['sporty', 'casual'], 'shoes:flats': ['garden', 'royal', 'cute'], 'shoes:boots': ['winter', 'hero', 'kpop'], 'shoes:heels': ['fancy', 'party', 'royal'], 'shoes:none': ['beach', 'sea', 'cozy'],
+  'acc:bow': ['cute', 'party'], 'acc:starclips': ['kpop', 'party'], 'acc:catears': ['cute', 'cozy'], 'acc:flowercrown': ['garden', 'fairy'], 'acc:headphones': ['kpop', 'casual', 'sporty'], 'acc:tiara': ['royal', 'fairy'], 'acc:crown': ['royal', 'fancy'],
+  'held:wand': ['fairy', 'royal'], 'held:bouquet': ['garden', 'royal'], 'held:fan': ['kpop', 'royal', 'summer'], 'held:mic': ['kpop', 'party'], 'held:lightstick': ['kpop', 'party'], 'held:sword': ['hero'],
+  'bg:garden': ['garden', 'fairy'], 'bg:ballroom': ['royal', 'fancy'], 'bg:stage': ['kpop', 'party'], 'bg:city': ['hero', 'party'], 'bg:sea': ['sea', 'beach'], 'bg:plain': ['cozy', 'cute'],
+  'face:natural': ['sporty', 'casual', 'beach', 'cozy'], 'face:glam': ['fancy', 'party', 'royal', 'kpop'], 'face:sparkle': ['party', 'kpop', 'fairy'], 'face:hearts': ['cute', 'garden'], 'face:star': ['kpop', 'hero', 'party'],
+};
+const COLOR_NAMES = { '#E5484D': 'red', '#FF6A4D': 'coral', '#FFB703': 'gold', '#FFE08A': 'yellow', '#22A95B': 'green', '#5FD3A5': 'mint', '#3D7BFD': 'blue', '#5BB4FF': 'sky blue', '#9B59D0': 'purple', '#C6B8FF': 'lilac', '#FF5FA2': 'hot pink', '#FF8FC7': 'pink', '#FFD6EA': 'pale pink', '#1B2A4A': 'navy', '#FFFFFF': 'white' };
+const JUDGES = [
+  { name: 'Judge Sunny', eq: { color: 'c-sun', hat: 'h-crown', eyes: 'e-glasses', extra: 'x-bow', pet: 'p-none', world: 'w-meadow' } },
+  { name: 'Judge Mint', eq: { color: 'c-mint', hat: 'h-top', eyes: 'e-shades', extra: 'x-none', pet: 'p-none', world: 'w-meadow' } },
+  { name: 'Judge Bubbles', eq: { color: 'c-bubble', hat: 'h-party', eyes: 'e-star', extra: 'x-scarf', pet: 'p-none', world: 'w-meadow' } },
+];
+const JUDGE_SAYS = { 5: ['Iconic!', 'Runway ready!', 'Absolutely stunning!'], 4: ['Gorgeous!', 'So stylish!', 'I love it!'], 3: ['Lovely look!', 'Very nice!', 'Pretty!'], 2: ['Cute! Try matching the theme more.', 'Nice try! Think about the theme.'], 1: ['Brave choice!', 'Fun! Next time follow the theme.'] };
+const SHOW_SECONDS = 120;
+let FS = null;
+
+function lookParts(L) {
+  return (L.dress !== 'none' ? [['dress', L.dress, L.dressColor]] : [['top', L.top, L.topColor], ['bottom', L.bottom, L.bottomColor]])
+    .concat([['shoes', L.shoes, L.shoes === 'none' ? null : L.shoesColor], ['acc', L.acc, L.acc === 'none' ? null : L.accColor],
+      ['held', L.held, L.held === 'none' ? null : L.heldColor], ['bg', L.bg, null], ['face', L.face, L.face === 'natural' ? null : L.faceColor]]);
+}
+// Points for each piece that suits the theme, plus colour points. Returns a 1-5 base and what the judges liked.
+function scoreLook(L, th) {
+  const parts = lookParts(L), loved = [];
+  let pts = 0;
+  for (const [k, id] of parts) if ((ITEM_TAGS[`${k}:${id}`] || []).some(t => th.tags.includes(t))) { pts += 2; loved.push(`the ${dItem(k, id)[1].toLowerCase()}`); }
+  const cols = parts.map(p => p[2]).filter(Boolean), uniqC = [...new Set(cols)];
+  let cpts = 0, cmax = 3;
+  if (th.special === 'rainbow') { cmax = 6; cpts = Math.min(6, uniqC.length); if (uniqC.length >= 4) loved.push(`all ${uniqC.length} colours`); }
+  else if (th.special === 'mono') { cmax = 6; cpts = cols.length >= 2 && uniqC.length === 1 ? 6 : uniqC.length === 2 ? 3 : 0; if (cpts) loved.push(`all that ${COLOR_NAMES[uniqC[0]] || 'matching colour'}`); }
+  else { const m = uniqC.filter(c => th.colors.includes(c)); cpts = Math.min(3, m.length); if (m.length) loved.push(`the ${m.slice(0, 3).map(c => COLOR_NAMES[c]).join(' and ')}`); }
+  const max = (th.tags.length ? parts.length * 2 * .7 : 0) + cmax, ratio = Math.min(1, (pts + cpts) / max);
+  return { base: 1 + ratio * 4, loved };
+}
+// Never below 2 stars, so a miss still feels encouraging
+const judgeStars = base => JUDGES.map(() => Math.max(2, Math.min(5, Math.round(base + (Math.random() - .5) * 1.2))));
+function randomLook(doll, th) {
+  const L = { ...DEFAULT_LOOK, ...doll.look }, palette = th.colors.length ? th.colors : CLOTH_COLORS;
+  const fits = k => { const ids = DCATS.find(c => c.k === k).items.map(i => i[0]), good = ids.filter(id => (ITEM_TAGS[`${k}:${id}`] || []).some(t => th.tags.includes(t))); return Math.random() < .6 && good.length ? pick(good) : pick(ids); };
+  ['top', 'bottom', 'shoes', 'acc', 'held', 'bg', 'face'].forEach(k => { L[k] = fits(k); });
+  L.dress = Math.random() < .5 ? fits('dress') : 'none';
+  const one = pick(CLOTH_COLORS);
+  ['topColor', 'bottomColor', 'dressColor', 'shoesColor', 'accColor', 'heldColor', 'faceColor'].forEach(k => { L[k] = th.special === 'mono' ? (Math.random() < .6 ? one : pick(CLOTH_COLORS)) : th.special === 'rainbow' ? pick(CLOTH_COLORS) : Math.random() < .65 ? pick(palette) : pick(CLOTH_COLORS); });
+  return L;
+}
+
+function startShowIntro(theme) {
+  if (FS && FS.timer) clearInterval(FS.timer);
+  FS = { theme: theme || pick(THEMES), phase: 'intro', timed: S.showTimer !== false, left: SHOW_SECONDS, timer: null };
+  show('show');
+  if (P().readAloud) speak(`Today's theme is ${FS.theme.name}. ${FS.theme.tip}`);
+}
+function endShow() { if (FS && FS.timer) clearInterval(FS.timer); FS = null; }
+function beginDressing() {
+  FS.phase = 'dress'; FS.left = SHOW_SECONDS; dTry = null; dCat = 'dress';
+  if (FS.timed) FS.timer = setInterval(() => {
+    if (!FS) return;
+    FS.left--;
+    const el = $('#showTime'); if (el) { el.textContent = fmtTime(FS.left); el.classList.toggle('urgent', FS.left <= 15); }
+    if (FS.left <= 10 && FS.left > 0) tone(880, .08, 0, 'square', .04);
+    if (FS.left <= 0) walkRunway();
+  }, 1000);
+  show('dress');
+}
+const fmtTime = s => `${Math.floor(s / 60)}:${String(Math.max(0, s) % 60).padStart(2, '0')}`;
+function walkRunway() {
+  if (!FS) return;
+  if (FS.timer) { clearInterval(FS.timer); FS.timer = null; }
+  dTry = null;
+  const doll = activeDoll(), look = lookOf(doll), th = FS.theme, me = scoreLook(look, th);
+  const rivals = shuffle(DOLLS.filter(d => d.id !== doll.id)).slice(0, 2).map(d => { const L = randomLook(d, th), sc = scoreLook(L, th); return { doll: d, look: L, stars: judgeStars(sc.base) }; });
+  FS.entries = [{ doll, look, stars: judgeStars(me.base), me: true, loved: me.loved }, ...rivals];
+  FS.entries.forEach(e => { e.total = e.stars.reduce((a, b) => a + b, 0); });
+  FS.phase = 'runway'; show('show'); sfx.level();
+  const tok = FS;
+  setTimeout(() => { if (FS === tok && FS.phase === 'runway') { FS.phase = 'judge'; renderShowScreen(); } }, 5200);
+}
+function renderShowBar() {
+  const bar = $('#showBar'), modes = $('#dressModes');
+  if (FS && FS.phase === 'dress') {
+    modes.hidden = true; bar.hidden = false;
+    bar.innerHTML = `<div class="sbtheme"><span>Theme</span><b>${esc(FS.theme.name)}</b><small>${esc(FS.theme.tip)}</small></div>
+      ${FS.timed ? `<span class="sbtime${FS.left <= 15 ? ' urgent' : ''}" id="showTime">${fmtTime(FS.left)}</span>` : ''}
+      <button class="btn gold" id="walkRunway">Walk the runway</button>`;
+  } else { bar.hidden = true; modes.hidden = false; }
+}
+function renderShowScreen() {
+  const box = $('#showBody'); if (!FS) return show('dress');
+  const th = FS.theme;
+  if (FS.phase === 'intro') {
+    box.innerHTML = `<div class="reveal">
+      <p class="eyebrow">Fashion show</p><h1>Today's theme is…</h1>
+      <div class="themecard"><b>${esc(th.name)}</b><span>${esc(th.tip)}</span></div>
+      <label class="toggle light"><input type="checkbox" id="showTimed" ${FS.timed ? 'checked' : ''}> 2-minute timer</label>
+      <div class="row"><button class="btn gold" id="showStart">Start dressing!</button><button class="btn" id="showNewTheme">Different theme</button><button class="btn ghost light" id="showCancel">Back</button></div></div>`;
+    return;
+  }
+  const me = FS.entries[0];
+  if (FS.phase === 'runway') {
+    box.innerHTML = `<div class="runway"><div class="spot"></div><div class="catwalk"></div><div class="crowd left"></div><div class="crowd right"></div>
+      <div class="walker">${dollSVG(me.look, '0 0 300 480', false)}</div><div class="flash"></div>
+      <p class="announce">Now on the runway: <b>${esc(me.doll.name)}</b></p><button class="btn small skip" id="skipRunway">Skip</button></div>`;
+    return;
+  }
+  if (FS.phase === 'judge') {
+    const starsRow = (n, i) => Array.from({ length: 5 }, (_, k) => `<i class="${k < n ? 'on' : ''}" style="animation-delay:${.4 + i * .9 + k * .12}s">${STAR}</i>`).join('');
+    const says = n => pick(JUDGE_SAYS[n]);
+    box.innerHTML = `<div class="judging">
+      <h2>The judges are scoring ${esc(me.doll.name)}</h2>
+      <div class="judgerow">
+        <div class="jlook">${dollSVG(me.look)}</div>
+        <div class="judges">${JUDGES.map((j, i) => `<div class="judge" style="animation-delay:${i * .9}s"><span class="jbud">${budSVG(j.eq, 1)}</span><div><b>${j.name}</b><span class="jstars">${starsRow(me.stars[i], i)}</span><p>${says(me.stars[i])}</p></div></div>`).join('')}</div>
+      </div>
+      <div class="loved"><span>What the judges loved</span><p>${me.loved.length ? esc(me.loved.slice(0, 4).join(', ')).replace(/, ([^,]*)$/, ' and $1') + '.' : `Next time, try this: ${esc(th.tip)}`}</p></div>
+      <button class="btn gold" id="showResults">See who won!</button></div>`;
+    if (P().readAloud) speak(`The judges loved ${me.loved.slice(0, 3).join(', ') || 'your bravery'}`);
+    return;
+  }
+  // Podium: the player wins ties
+  const ranked = FS.entries.slice().sort((a, b) => b.total - a.total || (b.me ? 1 : 0) - (a.me ? 1 : 0)), place = ranked.indexOf(me) + 1, prize = [15, 10, 5][place - 1];
+  if (!FS.rewarded) { FS.rewarded = true; const p = P(); p.stars += prize; p.lifetime += prize; save(); if (place === 1) confetti(160); sfx.level(); }
+  const ord = ['1st', '2nd', '3rd'];
+  box.innerHTML = `<div class="results-show">
+    <h1>${place === 1 ? 'You won the show!' : `You came ${ord[place - 1]}!`}</h1>
+    <p class="prize">${STAR}<span>+${prize} stars</span></p>
+    <div class="podium">${[1, 0, 2].map(i => { const e = ranked[i]; return `<div class="pod p${i + 1}${e.me ? ' me' : ''}"><div class="pdoll">${dollSVG(e.look, '0 0 300 480')}</div><div class="pblock"><span class="place">${ord[i]}</span><b>${esc(e.doll.name.replace('Princess ', '').replace(' the Mermaid', ''))}${e.me ? ' (you)' : ''}</b><span class="ptot">${STAR}${e.total}</span></div></div>`; }).join('')}</div>
+    <div class="row"><button class="btn gold" id="showAgain">Another show</button><button class="btn" id="showFree">Free dress-up</button><button class="btn" id="showHome">Home</button></div></div>`;
+  if (P().readAloud) speak(place === 1 ? 'You won the fashion show!' : `You came ${ord[place - 1]}! Great job.`);
 }
 
 /* ---------- Events ---------- */
@@ -1696,7 +1949,17 @@ document.addEventListener('click', e => {
   if (t.id === 'cpDone') { sfx.level(); confetti(80); toast('Lovely! Your picture is saved.'); cpPage = null; return renderColour(); }
   // Dress-up
   if (t.dataset.play === 'dress') { sfx.tap(); dTry = null; return show('dress'); }
-  if (t.id === 'dressBack') { dTry = null; return show('home'); }
+  if (t.id === 'dressBack') { dTry = null; endShow(); return show('home'); }
+  // Fashion show
+  if (t.id === 'modeShow') { sfx.tap(); return startShowIntro(); }
+  if (t.id === 'showStart') { sfx.tap(); return beginDressing(); }
+  if (t.id === 'showNewTheme') { const th = pick(THEMES.filter(x => x !== FS.theme)); sfx.tap(); return startShowIntro(th); }
+  if (t.id === 'showCancel' || t.id === 'showFree') { endShow(); return show('dress'); }
+  if (t.id === 'walkRunway') return walkRunway();
+  if (t.id === 'skipRunway' && FS) { FS.phase = 'judge'; return renderShowScreen(); }
+  if (t.id === 'showResults' && FS) { FS.phase = 'results'; return renderShowScreen(); }
+  if (t.id === 'showAgain') return startShowIntro();
+  if (t.id === 'showHome') { endShow(); return show('home'); }
   if (t.dataset.doll) { dollState().active = t.dataset.doll; dTry = null; save(); sfx.tap(); return renderDress(); }
   if (t.dataset.dcat) { dCat = t.dataset.dcat; dTry = null; return renderDress(); }
   if (t.dataset.ditem !== undefined) return dressPick(t.dataset.ditem);
@@ -1745,6 +2008,7 @@ document.addEventListener('click', e => {
 document.addEventListener('change', e => {
   const t = e.target;
   if (t.id === 'soundToggle') { S.sound = t.checked; save(); }
+  if (t.id === 'showTimed' && FS) { FS.timed = S.showTimer = t.checked; save(); }
   if (t.id === 'voiceSel') { S.voice = t.value; save(); speak('Hello! I will read the questions to you.'); }
   if (t.dataset.read) { const p = S.profiles.find(x => x.id === t.dataset.read); p.readAloud = t.checked; save(); }
 });
