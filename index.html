@@ -1,0 +1,1321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Brightbud</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="A learning game for kids: maths, words, numbers and geography, with stars to grow your own bud.">
+<!-- Installs as a full-screen iPad app from Safari: Share > Add to Home Screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Brightbud">
+<meta name="theme-color" content="#D9F2F2">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Lilita+One&display=swap">
+<style>
+/* Layout: one-screen toy app. Cartoon "sticker" UI with thick ink outlines on a pale aqua playroom;
+   character stage on the left, four chunky subject tiles on the right; quiz takes the whole screen. */
+:root{
+  --bg:#D9F2F2; --bg-deep:#B8E3E3; --ink:#1B2A4A; --ink-soft:#4E5E7E; --card:#FFFFFF; --card-soft:#F2FAFA;
+  --gold:#FFB703; --gold-deep:#D98E00;
+  --maths:#FF6A4D; --maths-deep:#C9442A;
+  --words:#3D7BFD; --words-deep:#2152C2;
+  --numbers:#22A95B; --numbers-deep:#127A3D;
+  --geo:#9B59D0; --geo-deep:#6F33A3;
+  --good:#22A95B; --bad:#E5484D;
+  --f-display:"Lilita One","Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Andika","Trebuchet MS",system-ui,sans-serif;
+  color-scheme:light;
+}
+[hidden]{display:none!important}
+*,*::before,*::after{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--bg)}
+body{margin:0}
+img{max-width:100%}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:18px;line-height:1.4;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+button{font:inherit;color:inherit;touch-action:manipulation;cursor:pointer}
+input{font:inherit;-webkit-user-select:text;user-select:text}
+#app{height:100%;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));box-sizing:border-box}
+.screen{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:18px;padding-block:16px 24px;-webkit-overflow-scrolling:touch}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance;letter-spacing:.01em}
+
+/* Chunky sticker buttons */
+.btn{font-family:var(--f-display);font-size:1.2rem;border:3px solid var(--ink);border-radius:18px;background:var(--card);color:var(--ink);
+  padding:.6em 1.1em;box-shadow:0 5px 0 var(--ink);transition:transform .08s,box-shadow .08s,background .15s;display:inline-flex;align-items:center;justify-content:center;gap:.4em}
+.btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.btn:disabled{opacity:.55;cursor:default}
+.btn:focus-visible,.tile:focus-visible,.ans:focus-visible,.chip:focus-visible,.item:focus-visible{outline:4px solid var(--gold);outline-offset:3px}
+.btn.gold{background:var(--gold)}
+.btn.green{background:var(--good);color:#fff}
+.btn.small{font-size:1rem;padding:.45em .8em;border-radius:14px;box-shadow:0 4px 0 var(--ink)}
+.btn.ghost{background:transparent;box-shadow:none;border-color:transparent;color:var(--ink-soft)}
+
+/* Top bar */
+.topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.topbar .grow{flex:1}
+.starpill{display:inline-flex;align-items:center;gap:.35em;font-family:var(--f-display);font-size:1.5rem;background:var(--card);
+  border:3px solid var(--ink);border-radius:999px;padding:.15em .7em .15em .4em;box-shadow:0 4px 0 var(--ink);font-variant-numeric:tabular-nums;position:relative}
+.starpill svg{width:1.3em;height:1.3em}
+.who{display:inline-flex;align-items:center;gap:.5em;font-family:var(--f-display);font-size:1.25rem}
+.who .mini{width:44px;height:44px;border-radius:50%;background:var(--card);border:3px solid var(--ink);overflow:hidden;display:grid;place-items:center}
+.who .mini svg{width:52px;height:52px;margin-top:6px}
+
+/* Home */
+.home{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-content:start}
+@media (min-width:820px){.home{grid-template-columns:minmax(300px,5fr) minmax(0,6fr);flex:1}}
+.stagecard{background:var(--card);border:3px solid var(--ink);border-radius:28px;box-shadow:0 6px 0 var(--ink);padding:16px;display:flex;flex-direction:column;gap:12px}
+.stage{border-radius:20px;border:3px solid var(--ink);aspect-ratio:1/0.9;max-width:100%;display:grid;place-items:center;overflow:hidden;position:relative}
+.stage svg{width:92%;height:92%}
+.stage.bob svg{animation:bob 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.budname{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.budname h2{font-size:1.7rem}
+.budname .title{font-family:var(--f-display);color:var(--numbers-deep);font-size:1.05rem}
+.growbar{height:16px;border:3px solid var(--ink);border-radius:999px;background:var(--card-soft);overflow:hidden}
+.growbar i{display:block;height:100%;background:var(--numbers);border-right:3px solid var(--ink);box-sizing:border-box}
+.growtxt{font-size:.95rem;color:var(--ink-soft)}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-content:start}
+.tile{--c:var(--maths);--cd:var(--maths-deep);text-align:left;border:3px solid var(--ink);border-radius:24px;background:var(--c);color:#fff;
+  box-shadow:0 6px 0 var(--ink);padding:16px;display:flex;flex-direction:column;gap:6px;min-height:170px;transition:transform .08s,box-shadow .08s;position:relative;overflow:hidden}
+.tile:active{transform:translateY(5px);box-shadow:0 1px 0 var(--ink)}
+.tile .glyph{font-family:var(--f-display);font-size:2.6rem;line-height:1;height:52px;display:flex;align-items:center;text-shadow:3px 3px 0 var(--cd)}
+.tile .glyph svg{width:50px;height:50px}
+.tile h3{font-size:1.6rem;color:#fff}
+.tile .skill{font-size:.95rem;font-weight:700;opacity:.95}
+.tile .meter{display:flex;gap:3px;margin-top:auto}
+.tile .meter b{flex:1;height:10px;border-radius:4px;background:rgba(255,255,255,.35)}
+.tile .meter b.on{background:#fff}
+.tile .lvl{font-family:var(--f-display);font-size:1rem;opacity:.95}
+.tile[data-s="words"]{--c:var(--words);--cd:var(--words-deep)}
+.tile[data-s="numbers"]{--c:var(--numbers);--cd:var(--numbers-deep)}
+.tile[data-s="geo"]{--c:var(--geo);--cd:var(--geo-deep)}
+.homeactions{display:flex;gap:12px;flex-wrap:wrap}
+.homeactions .btn{flex:1;min-width:140px}
+
+/* Quiz */
+.quiz{max-width:900px;width:100%;margin:0 auto}
+.dots{display:flex;gap:6px;flex:1;justify-content:center;flex-wrap:wrap}
+.dots i{width:22px;height:22px;border-radius:50%;border:3px solid var(--ink);background:var(--card);box-sizing:border-box}
+.dots i.now{background:var(--gold);transform:scale(1.15)}
+.dots i.r{background:var(--good)}
+.dots i.w{background:var(--bad)}
+.qcard{background:var(--card);border:3px solid var(--ink);border-radius:28px;box-shadow:0 6px 0 var(--ink);padding:20px;display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center;position:relative}
+.qtag{font-family:var(--f-display);font-size:.95rem;color:#fff;background:var(--c,var(--maths));border:2px solid var(--ink);border-radius:999px;padding:.15em .8em;letter-spacing:.03em}
+.qprompt{font-size:clamp(1.5rem,3.6vw,2.3rem);line-height:1.15;max-width:22ch}
+.qvisual{font-size:clamp(2.2rem,6vw,3.6rem);line-height:1.2;display:flex;align-items:center;justify-content:center;gap:.3em;flex-wrap:wrap;min-height:1.2em}
+.qvisual .grp{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:.1em;max-width:6.5em}
+.qvisual .op{font-family:var(--f-display);color:var(--ink-soft)}
+.qvisual .eq{font-family:var(--f-display);font-size:1.2em;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.qvisual .blank{display:inline-block;min-width:1.3em;border-bottom:6px solid var(--gold);color:var(--gold-deep)}
+.qvisual .seq{font-family:var(--f-display);font-size:.9em;display:flex;gap:.25em;flex-wrap:wrap;justify-content:center}
+.qvisual .seq span{background:var(--card-soft);border:3px solid var(--ink);border-radius:14px;padding:.05em .35em;min-width:1.4em}
+.qvisual .seq span.blank{border-bottom-width:3px;background:#FFF1CC}
+.qvisual .flag{font-size:1.9em;line-height:1}
+.qvisual .word{font-family:var(--f-display);font-size:.9em;letter-spacing:.08em}
+.qvisual .sentence{font-size:.55em;font-weight:700;max-width:24ch}
+.speak{position:absolute;top:12px;right:12px;width:52px;height:52px;border-radius:50%;padding:0}
+.speak svg{width:26px;height:26px}
+.answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.ans{font-family:var(--f-display);font-size:clamp(1.6rem,4.5vw,2.6rem);border:3px solid var(--ink);border-radius:22px;background:var(--card);
+  box-shadow:0 6px 0 var(--ink);min-height:96px;padding:.3em .4em;transition:transform .08s,box-shadow .08s,background .15s;overflow-wrap:anywhere}
+.answers.long .ans{font-size:clamp(1.15rem,2.8vw,1.6rem);font-family:var(--f-body);font-weight:700}
+.ans:active:not(:disabled){transform:translateY(5px);box-shadow:0 1px 0 var(--ink)}
+.ans.right{background:var(--good);color:#fff;animation:pop .35s}
+.ans.wrong{background:var(--bad);color:#fff;animation:shake .35s}
+.ans:disabled:not(.right):not(.wrong){opacity:.5}
+@keyframes pop{50%{transform:scale(1.07)}}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.padwrap{display:flex;flex-direction:column;gap:12px;align-items:center}
+.paddisp{font-family:var(--f-display);font-size:3rem;min-width:5ch;text-align:center;background:var(--card);border:3px solid var(--ink);border-radius:20px;padding:.05em .4em;min-height:1.3em;font-variant-numeric:tabular-nums}
+.paddisp.right{background:var(--good);color:#fff}
+.paddisp.wrong{background:var(--bad);color:#fff;text-decoration:line-through}
+.pad{display:grid;grid-template-columns:repeat(3,92px);gap:12px}
+.pad .ans{min-height:76px;font-size:2rem}
+.pad .ans.ok{background:var(--good);color:#fff}
+/* Explanation sheet: slides up after every answer, right or wrong */
+.feedback{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;flex-direction:column;gap:12px;align-items:center;
+  background:var(--card);border-top:5px solid var(--ink);border-radius:26px 26px 0 0;box-shadow:0 -8px 24px rgba(27,42,74,.18);
+  padding:16px max(16px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  max-height:68vh;overflow-y:auto;animation:sheet .28s ease-out;box-sizing:border-box}
+.feedback > *{width:100%;max-width:820px}
+.feedback.ok{border-top-color:var(--good)}
+.feedback.no{border-top-color:var(--gold)}
+@keyframes sheet{from{transform:translateY(100%)}}
+.fbhead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.verdict{margin:0;font-family:var(--f-display);font-size:clamp(1.4rem,3.4vw,1.9rem);line-height:1.15}
+.feedback.ok .verdict{color:var(--numbers-deep)}
+.verdict b{font-weight:400;color:#fff;background:var(--good);border:3px solid var(--ink);border-radius:12px;padding:0 .3em;white-space:nowrap}
+#explainSpeak{width:50px;height:50px;padding:0;flex:none}
+#explainSpeak svg{width:24px;height:24px}
+.how{background:var(--card-soft);border:3px solid var(--ink);border-radius:18px;padding:12px 18px;box-sizing:border-box}
+.howlbl{font-family:var(--f-display);font-size:.95rem;letter-spacing:.05em;color:var(--ink-soft);text-transform:uppercase}
+.how ol{margin:6px 0 0;padding-left:1.4em;display:flex;flex-direction:column;gap:6px;font-size:clamp(1.05rem,2.4vw,1.3rem);font-weight:700;line-height:1.35}
+.how li::marker{font-family:var(--f-display);color:var(--words)}
+#nextBtn{width:auto;min-width:220px;font-size:1.4rem}
+.gain{position:fixed;font-family:var(--f-display);font-size:2.2rem;color:var(--gold-deep);pointer-events:none;animation:rise 1s ease-out forwards;z-index:30;-webkit-text-stroke:1px var(--ink)}
+@keyframes rise{from{opacity:0;transform:translateY(20px) scale(.6)}20%{opacity:1;transform:translateY(0) scale(1.15)}to{opacity:0;transform:translateY(-70px) scale(1)}}
+
+/* Results */
+.results{max-width:640px;width:100%;margin:auto;align-items:center;text-align:center}
+.results .stage{width:min(320px,70vw)}
+.results h1{font-size:clamp(2rem,6vw,3rem)}
+.results .score{font-family:var(--f-display);font-size:1.5rem}
+.results ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;font-size:1.15rem;font-weight:700}
+.results .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+
+/* Shop */
+.shop{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-content:start}
+@media (min-width:820px){.shop{grid-template-columns:minmax(280px,4fr) minmax(0,6fr)}}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:var(--f-display);font-size:1.05rem;border:3px solid var(--ink);border-radius:999px;background:var(--card);padding:.3em .9em;box-shadow:0 3px 0 var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.item{border:3px solid var(--ink);border-radius:20px;background:var(--card);box-shadow:0 4px 0 var(--ink);padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.item[aria-pressed="true"]{background:#FFF1CC;outline:4px solid var(--gold);outline-offset:-1px}
+.item .thumb{width:84px;height:84px;display:grid;place-items:center;border-radius:16px;overflow:hidden;font-size:3.2rem}
+.item .thumb svg{width:100%;height:100%}
+.item .swatch{width:64px;height:64px;border-radius:50%;border:3px solid var(--ink)}
+.item .nm{font-family:var(--f-display);font-size:1.05rem}
+.item .pr{font-size:.95rem;font-weight:700;display:inline-flex;align-items:center;gap:.2em}
+.item .pr svg{width:1.1em;height:1.1em}
+.item .pr.own{color:var(--numbers-deep)}
+.shopaction{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.shopaction .hint{font-size:.95rem;color:var(--ink-soft);text-align:center;margin:0}
+
+/* Profiles & forms */
+.center{max-width:760px;width:100%;margin:0 auto}
+.brand{display:flex;align-items:center;gap:12px}
+.brand h1{font-size:clamp(2.2rem,6vw,3.2rem);color:var(--ink)}
+.brand h1 span{color:var(--numbers)}
+.lede{margin:0;font-size:1.15rem;color:var(--ink-soft);max-width:48ch}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.pcard{border:3px solid var(--ink);border-radius:24px;background:var(--card);box-shadow:0 5px 0 var(--ink);padding:12px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.pcard .stage{width:100%}
+.pcard .nm{font-family:var(--f-display);font-size:1.4rem}
+.pcard.new{justify-content:center;border-style:dashed;background:transparent;box-shadow:none;min-height:200px;font-family:var(--f-display);font-size:1.3rem}
+.form{background:var(--card);border:3px solid var(--ink);border-radius:28px;box-shadow:0 6px 0 var(--ink);padding:20px;display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:720px){.form{grid-template-columns:220px minmax(0,1fr)}}
+.form .stage{width:100%}
+.field{display:flex;flex-direction:column;gap:8px}
+.field label,.field .lbl{font-family:var(--f-display);font-size:1.1rem}
+.field input[type=text]{border:3px solid var(--ink);border-radius:14px;padding:.5em .7em;font-size:1.3rem;background:var(--card-soft);color:var(--ink);min-width:0}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.colorchip{width:48px;height:48px;border-radius:50%;border:3px solid var(--ink);padding:0}
+.colorchip[aria-pressed="true"]{outline:4px solid var(--gold);outline-offset:2px}
+.err{color:var(--bad);font-weight:700;margin:0}
+
+/* Grown-ups */
+.gu{max-width:860px;width:100%;margin:0 auto}
+.gucard{background:var(--card);border:3px solid var(--ink);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.gucard h3{font-size:1.4rem}
+.gutable{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.gutable th,.gutable td{text-align:left;padding:8px 6px;border-bottom:2px solid var(--bg-deep)}
+.gutable th{font-family:var(--f-display);font-weight:400;color:var(--ink-soft);font-size:.95rem;letter-spacing:.04em}
+.lvlctl{display:inline-flex;align-items:center;gap:8px}
+.lvlctl button{width:36px;height:36px;border-radius:50%;border:3px solid var(--ink);background:var(--card);font-family:var(--f-display);font-size:1.2rem;padding:0}
+.lvlctl span{min-width:2ch;text-align:center;font-family:var(--f-display);font-size:1.2rem}
+#voiceSel{border:3px solid var(--ink);border-radius:14px;padding:.45em .6em;font:inherit;font-size:1.05rem;background:var(--card);color:var(--ink);min-width:0;max-width:100%}
+.toggle{display:flex;align-items:center;gap:10px;font-weight:700}
+.toggle input{width:26px;height:26px;accent-color:var(--numbers)}
+.note{font-size:.95rem;color:var(--ink-soft);margin:0}
+.hold{position:relative;overflow:hidden}
+.hold i{position:absolute;inset:0 auto 0 0;width:0;background:var(--gold);opacity:.5;pointer-events:none}
+.hold.holding i{width:100%;transition:width 1.4s linear}
+.scrollx{overflow-x:auto}
+
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(140%);background:var(--ink);color:#fff;
+  font-family:var(--f-display);font-size:1.3rem;padding:.5em 1.1em;border-radius:999px;transition:transform .3s,visibility .3s;visibility:hidden;z-index:40;white-space:nowrap;max-width:calc(100vw - 32px);overflow:hidden;text-overflow:ellipsis}
+#toast.show{transform:translateX(-50%) translateY(0);visibility:visible}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:35;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-height:860px){
+  .quiz{gap:12px!important}
+  .qcard{padding:14px 20px;gap:8px}
+  .qvisual{font-size:clamp(2rem,5vw,3rem)}
+  .paddisp{font-size:2.2rem}
+  .pad{gap:8px}
+  .pad .ans{min-height:56px;font-size:1.6rem;box-shadow:0 4px 0 var(--ink)}
+  .ans{min-height:84px}
+}
+@media (max-width:520px){
+  .ans{min-height:80px}
+  .pad{grid-template-columns:repeat(3,76px)}
+  .tile{min-height:150px}
+  .tile h3{font-size:1.35rem}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Who's playing -->
+  <section class="screen" id="s-profiles" hidden>
+    <div class="center" style="display:flex;flex-direction:column;gap:18px">
+      <div class="brand"><h1>Bright<span>bud</span></h1></div>
+      <p class="lede">Who is playing today? Tap your bud to start.</p>
+      <div class="plist" id="plist"></div>
+    </div>
+  </section>
+
+  <!-- New player -->
+  <section class="screen" id="s-create" hidden>
+    <div class="center" style="display:flex;flex-direction:column;gap:18px">
+      <div class="brand"><h1>Bright<span>bud</span></h1></div>
+      <p class="lede">Answer questions, earn stars, and spend them to dress up and grow your very own bud.</p>
+      <form class="form" id="createForm" autocomplete="off">
+        <div class="stage" id="createStage"></div>
+        <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+          <div class="field">
+            <label for="pname">Your name</label>
+            <input type="text" id="pname" maxlength="14" placeholder="Type your name">
+          </div>
+          <div class="field">
+            <span class="lbl">How old are you?</span>
+            <div class="chips" id="ageChips"></div>
+          </div>
+          <div class="field">
+            <span class="lbl">Pick your bud's colour</span>
+            <div class="chips" id="colorChips"></div>
+          </div>
+          <p class="err" id="createErr" hidden></p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="btn gold" type="submit" id="createGo">Let's play!</button>
+            <button class="btn ghost" type="button" id="createCancel">Back</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Home -->
+  <section class="screen" id="s-home" hidden>
+    <div class="topbar">
+      <button class="btn small who" id="switchWho" aria-label="Switch player"><span class="mini" id="whoMini"></span><span id="whoName"></span></button>
+      <span class="grow"></span>
+      <span class="starpill" id="homeStars"></span>
+    </div>
+    <div class="home">
+      <div class="stagecard">
+        <div class="stage bob" id="homeStage"></div>
+        <div class="budname"><h2 id="budName"></h2><span class="title" id="budTitle"></span></div>
+        <div class="growbar"><i id="growFill"></i></div>
+        <div class="growtxt" id="growTxt"></div>
+        <div class="homeactions">
+          <button class="btn gold" id="openShop">Bud Shop</button>
+          <button class="btn small hold" id="openGU"><i></i>Grown-ups (hold)</button>
+        </div>
+      </div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+  </section>
+
+  <!-- Quiz -->
+  <section class="screen" id="s-quiz" hidden>
+    <div class="quiz" style="display:flex;flex-direction:column;gap:18px">
+      <div class="topbar">
+        <button class="btn small" id="quitQuiz">Stop</button>
+        <div class="dots" id="dots"></div>
+        <span class="starpill" id="quizStars"></span>
+      </div>
+      <div class="qcard">
+        <button class="btn speak" id="speakBtn" aria-label="Read the question out loud"></button>
+        <span class="qtag" id="qtag"></span>
+        <h2 class="qprompt" id="qprompt"></h2>
+        <div class="qvisual" id="qvisual"></div>
+      </div>
+      <div id="answers"></div>
+      <div class="feedback" id="feedback" hidden></div>
+    </div>
+  </section>
+
+  <!-- Round finished -->
+  <section class="screen" id="s-results" hidden>
+    <div class="results" style="display:flex;flex-direction:column;gap:16px">
+      <div class="stage bob" id="resStage"></div>
+      <h1 id="resTitle"></h1>
+      <div class="score" id="resScore"></div>
+      <ul id="resList"></ul>
+      <div class="row">
+        <button class="btn gold" id="resAgain">Play again</button>
+        <button class="btn" id="resShop">Bud Shop</button>
+        <button class="btn" id="resHome">Home</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shop -->
+  <section class="screen" id="s-shop" hidden>
+    <div class="topbar">
+      <button class="btn small" id="shopBack">Back</button>
+      <h2 style="font-size:1.8rem">Bud Shop</h2>
+      <span class="grow"></span>
+      <span class="starpill" id="shopStars"></span>
+    </div>
+    <div class="shop">
+      <div class="stagecard">
+        <div class="stage" id="shopStage"></div>
+        <div class="shopaction" id="shopAction"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+        <div class="tabs" id="shopTabs"></div>
+        <div class="items" id="shopItems"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grown-ups -->
+  <section class="screen" id="s-gu" hidden>
+    <div class="gu" style="display:flex;flex-direction:column;gap:16px">
+      <div class="topbar">
+        <button class="btn small" id="guBack">Back</button>
+        <h2 style="font-size:1.8rem">Grown-ups</h2>
+      </div>
+      <p class="note">After every answer, right or wrong, your child sees the steps to work it out. Each subject has 10 levels. A player moves up a level after 4 right answers in a row and drops back after 2 wrong in a row, so the questions stay at the edge of what they can do. You can also set a level by hand. Progress is saved on this iPad only.</p>
+      <label class="toggle"><input type="checkbox" id="soundToggle"> Sound effects</label>
+      <div class="field">
+        <label for="voiceSel">Reading voice</label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <select id="voiceSel"></select>
+          <button class="btn small" id="voiceTest">Try it</button>
+        </div>
+        <p class="note" id="voiceNote"></p>
+      </div>
+      <div id="guList" style="display:flex;flex-direction:column;gap:16px"></div>
+      <div><button class="btn" id="guAdd">Add a player</button></div>
+    </div>
+  </section>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<canvas id="fx"></canvas>
+
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const rand = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const uniq = a => [...new Set(a)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = n => Number(n).toLocaleString('en-US');
+
+const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.8l3.1 6.4 7 1-5.1 4.9 1.2 7-6.2-3.3-6.2 3.3 1.2-7L1.9 9.2l7-1z" fill="#FFB703" stroke="#1B2A4A" stroke-width="2" stroke-linejoin="round"/></svg>';
+const SPEAKER = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="#1B2A4A"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#1B2A4A" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>';
+const GLOBE = '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="#5BB4FF" stroke="#fff" stroke-width="3"/><path d="M14 12c5 2 4 7 9 8s3 6-1 8-3 7-6 6-4-8-6-10 0-9 4-12zM30 9c4 1 9 6 10 11-3 1-6-2-8 1s2 7-1 10-5 4-6 1 2-6 0-9-5-4-1-8 5-3 6-6z" fill="#22A95B"/></svg>';
+
+/* ---------- Save data ---------- */
+const KEY = 'brightbud-save-v1';
+let S = load();
+function load() {
+  let s = null;
+  try { s = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+  if (!s || !Array.isArray(s.profiles)) s = { profiles: [], current: null, sound: true };
+  return s;
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+const P = () => S.profiles.find(p => p.id === S.current);
+
+/* ---------- Subjects ---------- */
+const SUBJECTS = [
+  { id: 'maths', name: 'Maths', glyph: '+×', color: 'var(--maths)' },
+  { id: 'words', name: 'Words', glyph: 'Ab', color: 'var(--words)' },
+  { id: 'numbers', name: 'Numbers', glyph: '123', color: 'var(--numbers)' },
+  { id: 'geo', name: 'Geography', glyph: GLOBE, color: 'var(--geo)' },
+];
+const SKILLS = {
+  maths: ['Adding to 5', 'Adding to 10', 'Taking away', 'Sums to 20', 'Big sums', '2, 5 and 10 times', 'Times tables', 'Sharing (÷)', 'Two-step sums', 'Challenge mix'],
+  words: ['First letters', 'Picture words', 'Missing letters', 'Rhyming words', 'Spelling', 'Opposites', 'Plurals', 'Tricky spellings', 'Same meaning', 'Word wizard'],
+  numbers: ['Counting to 5', 'Counting to 10', 'Bigger or smaller', 'What comes next', 'Skip counting', 'Tens and ones', 'Hundreds', 'Odd, even, rounding', 'Number words', 'Roman numerals'],
+  geo: ['Famous flags', 'Continents', 'Capital cities', 'Famous places', 'More flags', 'Our planet', 'More capitals', 'Around the world', 'Rivers and mountains', 'Explorer mix'],
+};
+
+/* ---------- Question helpers ---------- */
+// Every question carries `why`: a short list of steps showing how to work out the answer.
+function numChoices(ans, spread = 3, min = 0) {
+  const s = new Set([ans]); let g = 0;
+  while (s.size < 4 && g++ < 200) { const d = ans + rand(-spread, spread); if (d >= min && d !== ans) s.add(d); }
+  let k = 1; while (s.size < 4) s.add(ans + spread + k++);
+  return shuffle([...s]).map(String);
+}
+function choicesFrom(ans, pool, n = 4) {
+  const others = shuffle(uniq(pool).filter(x => x !== ans)).slice(0, n - 1);
+  return shuffle([ans, ...others]);
+}
+const COUNTERS = ['🍎', '🐞', '⭐', '🍓', '🐟', '🌼', '🚗', '🧁', '🐥', '🍪'];
+const grp = (e, n) => `<span class="grp">${Array(n).fill(`<span>${e}</span>`).join('')}</span>`;
+const eq = s => `<div class="eq">${s.replace('?', '<span class="blank">?</span>')}</div>`;
+const sayMath = s => s.replace(/×/g, ' times ').replace(/÷/g, ' divided by ').replace(/−/g, ' minus ').replace(/\+/g, ' plus ').replace(/=/g, ' equals ').replace(/\?/g, ' what ');
+const mq = (expr, ans, why, kind = 'choice', spread = 3) => ({
+  prompt: 'What is the answer?', visual: eq(expr + ' = ?'), say: sayMath(expr), kind,
+  options: kind === 'choice' ? numChoices(ans, spread) : null, answer: String(ans), why,
+});
+const countOn = (a, n) => Array.from({ length: n }, (_, i) => a + i + 1).join(', ');
+const countBack = (a, n) => Array.from({ length: n }, (_, i) => a - i - 1).join(', ');
+const skip = (step, n) => Array.from({ length: n }, (_, i) => (i + 1) * step).join(', ');
+
+function addWhy(a, b) {
+  const s = a + b;
+  if (a < 10 && b >= 10) return [`Swap them round so the bigger number goes first: ${b} + ${a}.`, ...addWhy(b, a)];
+  if (s <= 10) return [`Start at ${a} and count on ${b} more: ${countOn(a, b)}.`, `So ${a} + ${b} = ${s}.`];
+  if (a < 10) { const need = 10 - a; return [`Make a 10 first: ${a} + ${need} = 10.`, `You used ${need} of the ${b}, so ${b - need} is left.`, `10 + ${b - need} = ${s}.`]; }
+  const at = a - a % 10, ao = a % 10;
+  if (b < 10) return [`Keep the ${at} to one side and add the ones: ${ao} + ${b} = ${ao + b}.`, `${at} + ${ao + b} = ${s}.`];
+  const bt = b - b % 10, bo = b % 10;
+  return [`Split both numbers into tens and ones.`, `Tens: ${at} + ${bt} = ${at + bt}.`, `Ones: ${ao} + ${bo} = ${ao + bo}.`, `Put them together: ${at + bt} + ${ao + bo} = ${s}.`];
+}
+function subWhy(a, b) {
+  const d = a - b;
+  if (a <= 10) return [`Start at ${a} and count back ${b}: ${countBack(a, b)}.`, `So ${a} − ${b} = ${d}.`];
+  if (b < 10) {
+    const ao = a % 10, base = a - ao;
+    if (b <= ao) return [`Take the ${b} away from the ones: ${ao} − ${b} = ${ao - b}.`, `${base} + ${ao - b} = ${d}.`];
+    return [`First take away ${ao} to get to ${base}.`, `You still need to take away ${b - ao} more.`, `${base} − ${b - ao} = ${d}.`];
+  }
+  const bt = b - b % 10, bo = b % 10;
+  return [`Take away the tens first: ${a} − ${bt} = ${a - bt}.`, bo ? `Then take away the ones: ${a - bt} − ${bo} = ${d}.` : `There are no ones to take away, so the answer is ${d}.`];
+}
+function mulWhy(a, b) {
+  const p = a * b;
+  if (a >= 11) { const t = a - a % 10, o = a % 10; return [`Split ${a} into ${t} and ${o}.`, `${t} × ${b} = ${t * b}.`, `${o} × ${b} = ${o * b}.`, `Add them: ${t * b} + ${o * b} = ${p}.`]; }
+  const step = Math.max(a, b), times = Math.min(a, b);
+  if (times === 1) return [`Anything times 1 stays the same.`, `${a} × ${b} = ${p}.`];
+  if (a === 10 || b === 10) { const o = a === 10 ? b : a; return [`Times 10 is easy: put a 0 on the end.`, `${o} becomes ${p}.`]; }
+  return [`${a} × ${b} means ${times} groups of ${step}.`, `Count in ${step}s, ${times} times: ${skip(step, times)}.`, `So ${a} × ${b} = ${p}.`];
+}
+const divWhy = (n, b, q) => [`${n} ÷ ${b} asks: how many ${b}s make ${n}?`, `Count in ${b}s: ${skip(b, q)}.`, `That's ${q} jumps, so ${n} ÷ ${b} = ${q}.`];
+
+/* ---------- Maths ---------- */
+function maths(L) {
+  switch (L) {
+    case 1: { const a = rand(1, 4), b = rand(1, 5 - a), e = pick(COUNTERS);
+      return { prompt: `What is ${a} + ${b}?`, visual: `${grp(e, a)}<b class="op">+</b>${grp(e, b)}`, say: `What is ${a} plus ${b}?`, kind: 'choice', options: numChoices(a + b, 2, 1), answer: String(a + b),
+        why: [`Count the first group: ${countOn(0, a)}.`, `Keep counting the second group: ${countOn(a, b)}.`, `That's ${a + b} altogether.`] }; }
+    case 2: { const a = rand(1, 9), b = rand(1, 10 - a); return mq(`${a} + ${b}`, a + b, addWhy(a, b), 'choice', 2); }
+    case 3: { const a = rand(3, 10), b = rand(1, a - 1); return mq(`${a} − ${b}`, a - b, subWhy(a, b), 'choice', 2); }
+    case 4: { if (Math.random() < .5) { const a = rand(5, 15), b = rand(2, 20 - a); return mq(`${a} + ${b}`, a + b, addWhy(a, b)); }
+      const a = rand(11, 20), b = rand(2, 10); return mq(`${a} − ${b}`, a - b, subWhy(a, b)); }
+    case 5: { if (Math.random() < .5) { const a = rand(12, 79), b = rand(5, 99 - a); return mq(`${a} + ${b}`, a + b, addWhy(a, b), 'pad'); }
+      const a = rand(30, 99), b = rand(5, a - 10); return mq(`${a} − ${b}`, a - b, subWhy(a, b), 'pad'); }
+    case 6: { const t = pick([2, 5, 10]), n = rand(1, 12), [x, y] = Math.random() < .5 ? [n, t] : [t, n]; return mq(`${x} × ${y}`, n * t, mulWhy(x, y), 'choice', t); }
+    case 7: { const a = rand(2, 10), b = rand(2, 10); return mq(`${a} × ${b}`, a * b, mulWhy(a, b), 'pad'); }
+    case 8: { const b = rand(2, 10), q = rand(2, 10); return mq(`${b * q} ÷ ${b}`, q, divWhy(b * q, b, q), 'pad'); }
+    case 9: { const a = rand(2, 9), b = rand(2, 9), c = rand(2, 20), p = a * b;
+      if (Math.random() < .5 || p <= c) return mq(`${a} × ${b} + ${c}`, p + c, [`Always do the times part first: ${a} × ${b} = ${p}.`, `Then add: ${p} + ${c} = ${p + c}.`], 'pad');
+      return mq(`${a} × ${b} − ${c}`, p - c, [`Always do the times part first: ${a} × ${b} = ${p}.`, `Then take away: ${p} − ${c} = ${p - c}.`], 'pad'); }
+    default: {
+      const r = rand(0, 3);
+      if (r === 0) { const n = rand(10, 100) * 2, h = n / 2, x = n - n % 20, y = n % 20;
+        const why = [`Half means sharing into 2 equal parts.`];
+        if (!y) why.push(`${n} is ${n / 10} tens. Half of ${n / 10} tens is ${n / 20} ${n === 20 ? 'ten' : 'tens'}, which is ${h}.`);
+        if (x && y) why.push(`Split ${n} into ${x} and ${y}.`, `Half of ${x} is ${x / 2}. Half of ${y} is ${y / 2}.`, `${x / 2} + ${y / 2} = ${h}.`);
+        why.push(`Check: ${h} + ${h} = ${n}.`);
+        return { prompt: `What is half of ${n}?`, visual: eq(`½ of ${n} = ?`), say: `What is half of ${n}?`, kind: 'pad', answer: String(h), why }; }
+      if (r === 1) { const n = rand(3, 25) * 4;
+        return { prompt: `What is a quarter of ${n}?`, visual: eq(`¼ of ${n} = ?`), say: `What is a quarter of ${n}?`, kind: 'pad', answer: String(n / 4),
+          why: [`A quarter is half of a half.`, `Half of ${n} is ${n / 2}.`, `Half of ${n / 2} is ${n / 4}.`] }; }
+      if (r === 2) { const a = rand(12, 29), b = rand(3, 9); return mq(`${a} × ${b}`, a * b, mulWhy(a, b), 'pad'); }
+      const a = rand(3, 12), b = rand(3, 12);
+      return { prompt: 'Find the missing number', visual: eq(`? × ${b} = ${a * b}`), say: `What times ${b} equals ${a * b}?`, kind: 'pad', answer: String(a),
+        why: [`Which number times ${b} makes ${a * b}?`, `Count in ${b}s until you reach ${a * b}: ${skip(b, a)}.`, `That's ${a} jumps, so the missing number is ${a}.`] };
+    }
+  }
+}
+
+/* ---------- Numbers ---------- */
+const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+const words99 = n => n < 20 ? ONES[n] : TENS[Math.floor(n / 10)] + (n % 10 ? '-' + ONES[n % 10] : '');
+const ROMAN = [[50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
+function romanParts(n) { const out = []; for (const [v, r] of ROMAN) while (n >= v) { out.push([r, v]); n -= v; } return out; }
+const toRoman = n => romanParts(n).map(p => p[0]).join('');
+function romanWhy(n) {
+  const parts = romanParts(n), why = [`I = 1, V = 5, X = 10, L = 50. A small one in front of a bigger one means take away, so IV = 4 and IX = 9.`];
+  if (parts.length > 1) why.push(`Break ${toRoman(n)} into pieces: ${parts.map(([r, v]) => `${r} = ${v}`).join(', ')}.`, `Add them up: ${parts.map(p => p[1]).join(' + ')} = ${n}.`);
+  else why.push(`${toRoman(n)} = ${n}.`);
+  return why;
+}
+const seqVis = arr => `<div class="seq">${arr.map(x => x === '?' ? '<span class="blank">?</span>' : `<span>${x}</span>`).join('')}</div>`;
+function numbers(L) {
+  switch (L) {
+    case 1: case 2: { const n = L === 1 ? rand(1, 5) : rand(4, 10), e = pick(COUNTERS);
+      return { prompt: 'How many can you count?', visual: grp(e, n), kind: 'choice', options: numChoices(n, 2, 1), answer: String(n),
+        why: [`Touch each one as you count: ${countOn(0, n)}.`, `The last number you say tells you how many: ${n}.`] }; }
+    case 3: { const a = rand(1, 20); let b; do { b = rand(1, 20); } while (b === a);
+      const big = Math.random() < .6, hi = Math.max(a, b), lo = Math.min(a, b);
+      return { prompt: big ? 'Which number is bigger?' : 'Which number is smaller?', kind: 'choice', options: [String(a), String(b)], answer: String(big ? hi : lo),
+        why: [`When you count up, bigger numbers come later.`, `Counting up you say ${lo} before ${hi}.`, `So ${hi} is bigger and ${lo} is smaller.`] }; }
+    case 4: { const n = rand(2, 45);
+      if (Math.random() < .6) return { prompt: 'What number comes next?', visual: seqVis([n, n + 1, n + 2, '?']), kind: 'choice', options: numChoices(n + 3, 3, 0), answer: String(n + 3),
+        why: [`Each number is 1 more than the one before.`, `Count up: ${n}, ${n + 1}, ${n + 2}, ${n + 3}.`] };
+      return { prompt: 'What number comes before?', visual: seqVis(['?', n + 1, n + 2, n + 3]), kind: 'choice', options: numChoices(n, 3, 0), answer: String(n),
+        why: [`Each number is 1 more than the one before, so go back by 1.`, `Count back: ${n + 3}, ${n + 2}, ${n + 1}, ${n}.`] }; }
+    case 5: { const step = pick([2, 5, 10, 3]), start = step * rand(0, 6), hole = rand(1, 4);
+      const arr = [0, 1, 2, 3, 4].map(i => start + i * step), ans = arr[hole], prev = arr[hole - 1]; arr[hole] = '?';
+      return { prompt: `Count in ${step}s. What is missing?`, visual: seqVis(arr), kind: 'choice', options: numChoices(ans, step, 0), answer: String(ans),
+        why: [`Each number is ${step} more than the one before.`, `The number before the gap is ${prev}.`, `${prev} + ${step} = ${ans}.`] }; }
+    case 6: { let t, o; do { t = rand(1, 9); o = rand(0, 9); } while (t === o); const n = t * 10 + o, askTens = Math.random() < .5, ans = askTens ? t : o;
+      return { prompt: `How many ${askTens ? 'tens' : 'ones'} are in ${n}?`, visual: `<div class="eq">${n}</div>`, kind: 'choice', options: choicesFrom(String(ans), ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', String(n)]), answer: String(ans),
+        why: [`In a 2-digit number, the first digit is the tens and the last digit is the ones.`, `${n} is ${t} ${t === 1 ? 'ten' : 'tens'} (${t * 10}) and ${o} ${o === 1 ? 'one' : 'ones'}.`, `So the answer is ${ans}.`] }; }
+    case 7: { const base = rand(1, 8) * 100, s = new Set(); while (s.size < 4) s.add(base + rand(0, 199));
+      const arr = [...s], big = Math.random() < .5, ans = big ? Math.max(...arr) : Math.min(...arr), word = big ? 'biggest' : 'smallest';
+      return { prompt: `Which number is the ${word}?`, kind: 'choice', options: shuffle(arr).map(String), answer: String(ans),
+        why: [`Compare the hundreds digit first. The ${big ? 'bigger' : 'smaller'} hundreds wins.`, `If the hundreds are the same, compare the tens. If those match too, compare the ones.`, `${ans} is the ${word}.`] }; }
+    case 8: { if (Math.random() < .5) { const n = rand(11, 99), ans = n % 2 ? 'Odd' : 'Even';
+        return { prompt: `Is ${n} odd or even?`, visual: `<div class="eq">${n}</div>`, kind: 'choice', options: ['Odd', 'Even'], answer: ans,
+          why: [`Only the last digit matters. Here it is ${n % 10}.`, `Numbers ending in 0, 2, 4, 6 or 8 are even. Numbers ending in 1, 3, 5, 7 or 9 are odd.`, `So ${n} is ${ans.toLowerCase()}.`] }; }
+      let n; do { n = rand(12, 98); } while (n % 5 === 0); const r = Math.round(n / 10) * 10, lo = n - n % 10, o = n % 10;
+      return { prompt: `Round ${n} to the nearest 10`, visual: `<div class="eq">${n} → ?</div>`, kind: 'choice', options: choicesFrom(String(r), [r - 10, r + 10, r + 20, r - 20, n].filter(x => x > 0).map(String)), answer: String(r),
+        why: [`${n} is between ${lo} and ${lo + 10}.`, `Look at the ones digit: ${o}. ${o >= 5 ? '5 or more rounds up.' : '4 or less rounds down.'}`, `So ${n} rounds to ${r}.`] }; }
+    case 9: { if (Math.random() < .6) { const n = rand(13, 99), t = Math.floor(n / 10), o = n % 10;
+        const pool = [String(o * 10 + t), String(n + 10 > 99 ? n - 10 : n + 10), String(n % 10 === 9 ? n - 1 : n + 1), String(n - 1), String(n - 10)].filter(x => x !== String(n) && +x >= 10);
+        const why = n < 20 ? [`Numbers ending in "teen" are 1 ten and some ones.`, `${words99(n)} is 10 + ${o} = ${n}.`]
+          : [`"${TENS[t]}" means ${t} tens, which is ${t * 10}.`, ...(o ? [`"${ONES[o]}" means ${o} ones.`, `${t * 10} + ${o} = ${n}.`] : [`There are no ones, so it is ${n}.`])];
+        return { prompt: `Which number is ${words99(n)}?`, say: `Which number is ${words99(n)}?`, kind: 'choice', options: choicesFrom(String(n), pool), answer: String(n), why }; }
+      let n; do { n = rand(120, 980); } while (n % 100 === 50); const r = Math.round(n / 100) * 100, lo = n - n % 100, td = Math.floor(n / 10) % 10;
+      return { prompt: `Round ${n} to the nearest 100`, visual: `<div class="eq">${n} → ?</div>`, kind: 'choice', options: choicesFrom(String(r), [r - 100, r + 100, r + 200, r - 200, Math.round(n / 10) * 10].filter(x => x > 0).map(String)), answer: String(r),
+        why: [`${n} is between ${lo} and ${lo + 100}.`, `Look at the tens digit: ${td}. ${td >= 5 ? '5 or more rounds up.' : '4 or less rounds down.'}`, `So ${n} rounds to ${r}.`] }; }
+    default: { if (Math.random() < .5) { const n = rand(4, 39), rn = toRoman(n);
+        if (Math.random() < .5) return { prompt: 'What number is this Roman numeral?', visual: `<div class="eq">${rn}</div>`, say: 'What number is this Roman numeral?', kind: 'choice', options: numChoices(n, 4, 1), answer: String(n), why: romanWhy(n) };
+        return { prompt: `What is ${n} in Roman numerals?`, kind: 'choice', options: choicesFrom(rn, [toRoman(n + 1), toRoman(Math.max(1, n - 1)), toRoman(n + 5), toRoman(n + 10), toRoman(Math.max(1, n - 4))]), answer: rn, why: romanWhy(n) }; }
+      let ds; do { ds = [rand(1, 9), rand(0, 9), rand(0, 9), rand(0, 9)]; } while (new Set(ds).size < 4);
+      let pos = rand(0, 3); if (!ds[pos]) pos = 0;
+      const n = +ds.join(''), d = ds[pos], val = d * 10 ** (3 - pos), place = ['thousands', 'hundreds', 'tens', 'ones'][pos];
+      return { prompt: `What is the ${d} worth in ${fmt(n)}?`, visual: `<div class="eq">${fmt(n)}</div>`, kind: 'choice', options: shuffle([d, d * 10, d * 100, d * 1000].map(fmt)), answer: fmt(val),
+        why: [`Name the places from the right: ones, tens, hundreds, thousands.`, `In ${fmt(n)}, the ${d} is in the ${place} place.`, `So it is worth ${d} × ${fmt(10 ** (3 - pos))} = ${fmt(val)}.`] }; }
+  }
+}
+
+/* ---------- Words ---------- */
+const PICS = [['cat', '🐱'], ['dog', '🐶'], ['pig', '🐷'], ['cow', '🐮'], ['bee', '🐝'], ['fox', '🦊'], ['egg', '🥚'], ['bus', '🚌'], ['sun', '☀️'], ['hat', '🎩'], ['bed', '🛏️'], ['cup', '☕'], ['ant', '🐜'], ['owl', '🦉'], ['bat', '🦇'], ['car', '🚗'], ['key', '🔑'], ['box', '📦'], ['web', '🕸️'], ['jam', '🍯'], ['map', '🗺️'], ['van', '🚐']];
+const PICS2 = [['fish', '🐟'], ['frog', '🐸'], ['duck', '🦆'], ['star', '⭐'], ['moon', '🌙'], ['tree', '🌳'], ['cake', '🍰'], ['boat', '⛵'], ['bear', '🐻'], ['lion', '🦁'], ['apple', '🍎'], ['house', '🏠'], ['horse', '🐴'], ['train', '🚂'], ['snake', '🐍'], ['whale', '🐳'], ['lemon', '🍋'], ['pizza', '🍕'], ['robot', '🤖'], ['clock', '⏰'], ['mouse', '🐭'], ['tiger', '🐯'], ['zebra', '🦓'], ['rocket', '🚀'], ['banana', '🍌'], ['rabbit', '🐰'], ['turtle', '🐢'], ['penguin', '🐧'], ['octopus', '🐙'], ['umbrella', '☂️'], ['dragon', '🐉'], ['monkey', '🐵'], ['carrot', '🥕'], ['flower', '🌸'], ['pencil', '✏️'], ['castle', '🏰']];
+const RHYMES = [['cat', 'hat', 'bat', 'mat', 'rat'], ['dog', 'log', 'frog', 'fog'], ['sun', 'run', 'fun', 'bun'], ['bee', 'tree', 'see', 'three'], ['cake', 'lake', 'snake', 'bake'], ['star', 'car', 'jar', 'far'], ['ball', 'tall', 'wall', 'fall'], ['bed', 'red', 'head', 'bread'], ['pig', 'big', 'dig', 'wig'], ['moon', 'spoon', 'soon', 'noon'], ['boat', 'coat', 'goat', 'float'], ['king', 'ring', 'sing', 'wing'], ['fish', 'dish', 'wish'], ['house', 'mouse']];
+const OPPOSITES = [['hot', 'cold'], ['big', 'small'], ['up', 'down'], ['fast', 'slow'], ['happy', 'sad'], ['day', 'night'], ['open', 'closed'], ['wet', 'dry'], ['full', 'empty'], ['loud', 'quiet'], ['light', 'dark'], ['old', 'new'], ['hard', 'soft'], ['tall', 'short'], ['early', 'late'], ['push', 'pull'], ['first', 'last'], ['top', 'bottom'], ['win', 'lose'], ['inside', 'outside']];
+const PLURALS = [['mouse', 'mice', 'mouses', 'mices', 'meese'], ['child', 'children', 'childs', 'childrens', 'childes'], ['box', 'boxes', 'boxs', 'boxies', 'boxen'], ['baby', 'babies', 'babys', 'babyes', 'babis'], ['foot', 'feet', 'foots', 'feets', 'footes'], ['tooth', 'teeth', 'tooths', 'teeths', 'toothes'], ['fox', 'foxes', 'foxs', 'foxies', 'foxen'], ['knife', 'knives', 'knifes', 'knifs', 'knivs'], ['sheep', 'sheep', 'sheeps', 'sheepes', 'shoop'], ['man', 'men', 'mans', 'mens', 'manes'], ['goose', 'geese', 'gooses', 'geeses', 'goosen'], ['city', 'cities', 'citys', 'cityes', 'citis'], ['wish', 'wishes', 'wishs', 'wishies', 'wishen'], ['woman', 'women', 'womans', 'womens', 'womenes'], ['wolf', 'wolves', 'wolfs', 'wolfes', 'wolvs'], ['lady', 'ladies', 'ladys', 'ladyes', 'ladis']];
+function pluralWhy(s, p) {
+  if (/(x|s|sh|ch)$/.test(s) && p === s + 'es') return [`Words that end in x, s, sh or ch add "es".`, `${s} + es = ${p}.`];
+  if (/y$/.test(s) && p.endsWith('ies')) return [`When a word ends in y after a consonant, change the y to i and add "es".`, `${s} → ${p}.`];
+  if (/ves$/.test(p)) return [`Lots of words that end in f or fe change to "ves".`, `${s} → ${p}.`];
+  if (s === p) return [`Some words stay exactly the same: one ${s}, two ${p}.`];
+  return [`${s} is a special word. It doesn't just add "s".`, `One ${s}, two ${p}. It's one to remember!`];
+}
+const TRICKY = [
+  ['because', ['becuase', 'becos', 'beacause'], 'Remember: Big Elephants Can Always Understand Small Elephants. B-E-C-A-U-S-E.'],
+  ['friend', ['freind', 'frend', 'friand'], 'You are a friend to the END: fri + end.'],
+  ['said', ['sed', 'siad', 'sayd'], 'It sounds like "sed" but it is spelled with "ai": s-ai-d.'],
+  ['people', ['peeple', 'peopel', 'pepole'], 'There is a sneaky o after the e: p-e-o-p-l-e.'],
+  ['would', ['wuld', 'woud', 'whould'], 'Would, could and should all end in "ould": O U Lucky Duck.'],
+  ['they', ['thay', 'thei', 'theiy'], 'It ends with "ey", like in "hey": t-h-e-y.'],
+  ['school', ['skool', 'shcool', 'scool'], 'The "k" sound is spelled "ch": s-ch-oo-l.'],
+  ['beautiful', ['beutiful', 'beautifull', 'beatiful'], 'It starts with "beau" (b-e-a-u) and "ful" only has one l.'],
+  ['Wednesday', ['Wensday', 'Wednsday', 'Wedensday'], 'Say it like a robot to hear every part: Wed-nes-day.'],
+  ['different', ['diffrent', 'diferent', 'differant'], 'Say it slowly: dif-fer-ent. Two f\'s, and it ends in "ent".'],
+  ['surprise', ['suprise', 'surprize', 'surprice'], 'Say it slowly: sur-prise. There are two r\'s.'],
+  ['February', ['Febuary', 'Februray', 'Feburary'], 'Say it slowly: Feb-ru-ar-y. Don\'t forget the first r!'],
+  ['library', ['libary', 'liberry', 'librery'], 'Say it slowly: li-brar-y. There are two r\'s.'],
+  ['island', ['iland', 'ilsand', 'islend'], 'An island IS LAND, so it has a silent s: is + land.'],
+  ['answer', ['anser', 'answar', 'awnser'], 'There is a silent w: an-s-w-er.'],
+  ['enough', ['enuf', 'enogh', 'enouf'], 'The "uff" sound is spelled "ough": en + ough.'],
+  ['believe', ['beleive', 'belive', 'beleve'], 'Never beLIEve a LIE: there is a "lie" inside it.'],
+  ['separate', ['seperate', 'separete', 'saperate'], 'There is "a rat" in sep-A-RAT-e.'],
+  ['necessary', ['neccessary', 'necesary', 'nessesary'], 'A shirt has one collar and two sleeves: one c, two s\'s.'],
+  ['rhythm', ['rythm', 'rhythem', 'ryhthm'], 'Rhythm Helps Your Two Hips Move: R-H-Y-T-H-M.'],
+];
+const SYNONYMS = [['happy', 'glad', 'sad', 'tired', 'loud'], ['big', 'huge', 'tiny', 'slow', 'wet'], ['fast', 'quick', 'late', 'heavy', 'calm'], ['small', 'little', 'giant', 'noisy', 'cold'], ['angry', 'cross', 'pleased', 'sleepy', 'shy'], ['scared', 'afraid', 'brave', 'hungry', 'kind'], ['smart', 'clever', 'silly', 'quiet', 'soft'], ['begin', 'start', 'finish', 'stop', 'forget'], ['shout', 'yell', 'whisper', 'listen', 'sleep'], ['tired', 'sleepy', 'awake', 'lively', 'hungry'], ['cold', 'chilly', 'warm', 'sunny', 'sticky'], ['jump', 'leap', 'sit', 'crawl', 'sink'], ['quiet', 'silent', 'noisy', 'bright', 'busy'], ['rich', 'wealthy', 'poor', 'lucky', 'strong'], ['look', 'see', 'hear', 'touch', 'smell'], ['gift', 'present', 'parcel', 'party', 'card']];
+const HOMOPHONES = [
+  ['We ate ___ pizzas.', 'two', ['to', 'too'], '"Two" is the number 2. "Too" means also or very. "To" is for going somewhere.'],
+  ["___ going to the park.", "They're", ['There', 'Their'], '"They\'re" is short for "they are": They are going to the park.'],
+  ['Put the book over ___.', 'there', ['their', "they're"], '"There" is a place. It has "here" inside it: t-HERE.'],
+  ['___ house is red.', 'Their', ['There', "They're"], '"Their" means it belongs to them. It has "heir" inside, and an heir owns things.'],
+  ['The sky is ___.', 'blue', ['blew', 'bloo'], '"Blue" is a colour. "Blew" is what the wind did.'],
+  ['The wind ___ hard.', 'blew', ['blue', 'blow'], '"Blew" means the wind blowing in the past. "Blue" is a colour.'],
+  ['I ___ the answer!', 'know', ['no', 'now'], '"Know" (with a silent k) is about knowing things. "No" is the opposite of yes.'],
+  ['She has a ___ of shoes.', 'pair', ['pear', 'pare'], '"Pair" means two things that go together. A "pear" is a fruit.'],
+  ['I ate a juicy ___.', 'pear', ['pair', 'pare'], 'A "pear" is a fruit. Remember: you EAT a pEAr.'],
+  ['Can you ___ me?', 'hear', ['here', 'hair'], 'You hear with your EAR, and "hear" has "ear" inside it.'],
+  ['Come ___ and sit.', 'here', ['hear', 'hare'], '"Here" is a place, like "there" and "where".'],
+  ['We ___ the game!', 'won', ['one', 'wun'], '"Won" means you were the winner. "One" is the number 1.'],
+  ['Turn ___ at the corner.', 'right', ['write', 'rite'], '"Right" is a direction (or correct). "Write" is what you do with a pencil.'],
+  ['Please ___ your name.', 'write', ['right', 'rite'], '"Write" (with a silent w) is what you do with a pencil.'],
+  ['I can ___ the sea.', 'see', ['sea', 'si'], 'You "see" with your eyes (two e\'s, like two eyes). The "sea" is full of water.'],
+  ['The ___ is shining.', 'sun', ['son', 'sunn'], 'The "sun" is in the sky. A "son" is a boy in a family.'],
+];
+const MEANINGS = [
+  ['enormous', 'very big', ['very small', 'very fast', 'very old'], 'The whale was enormous, bigger than a bus!'],
+  ['ancient', 'very old', ['very new', 'very wet', 'very loud'], 'The pyramids are ancient. They are thousands of years old.'],
+  ['furious', 'very angry', ['very happy', 'very cold', 'very quiet'], 'Dad was furious when the dog ate his dinner.'],
+  ['exhausted', 'very tired', ['very hungry', 'very excited', 'very clean'], 'After the race I was exhausted and needed a rest.'],
+  ['delicious', 'tastes very good', ['smells bad', 'is very hard', 'is very far'], 'This chocolate cake is delicious!'],
+  ['fragile', 'breaks easily', ['very heavy', 'very sticky', 'very bright'], 'Be careful with that glass, it is fragile.'],
+  ['timid', 'shy', ['bossy', 'strong', 'loud'], 'The timid kitten hid under the bed.'],
+  ['vanish', 'disappear', ['appear', 'explode', 'grow'], 'The magician made the rabbit vanish.'],
+  ['gigantic', 'huge', ['tiny', 'soft', 'shiny'], 'The dinosaur left gigantic footprints.'],
+  ['curious', 'wants to find out', ['wants to sleep', 'wants to hide', 'wants to shout'], 'The curious monkey opened every box.'],
+  ['soar', 'fly high', ['dig deep', 'swim fast', 'sit still'], 'Eagles soar high above the mountains.'],
+  ['generous', 'happy to share', ['keeps everything', 'very rude', 'very late'], 'She was generous and shared her sweets with everyone.'],
+];
+function misspell(w) {
+  const V = 'aeiou', out = new Set(); let g = 0;
+  while (out.size < 3 && g++ < 80) {
+    const r = rand(0, 3), m = w.split('');
+    if (r === 0) { const i = rand(0, m.length - 2); [m[i], m[i + 1]] = [m[i + 1], m[i]]; }
+    else if (r === 1) { const idx = m.map((c, i) => V.includes(c) ? i : -1).filter(i => i >= 0); if (!idx.length) continue; const i = pick(idx); m[i] = pick(V.replace(m[i], '').split('')); }
+    else if (r === 2) { const i = rand(1, m.length - 1); if (m[i] === m[i - 1]) m.splice(i, 1); else m.splice(i, 0, m[i]); }
+    else { const i = rand(1, m.length - 2); m.splice(i, 1); }
+    const s = m.join(''); if (s !== w) out.add(s);
+  }
+  return [...out];
+}
+const spellOut = w => w.split('').join('-');
+function rhymeEnd(a, b) { let i = 0; while (i < a.length && i < b.length && a[a.length - 1 - i] === b[b.length - 1 - i]) i++; return a.slice(a.length - i); }
+const ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+function words(L) {
+  switch (L) {
+    case 1: { const [w, e] = pick(PICS.concat(PICS2.slice(0, 12))), a = w[0].toUpperCase();
+      return { prompt: 'Which letter does it start with?', visual: e, say: `Which letter does ${w} start with?`, kind: 'choice', options: choicesFrom(a, ABC), answer: a,
+        why: [`This is a ${w}.`, `Say it slowly and listen to the very first sound: "${w[0]}…${w.slice(1)}".`, `${a} is for ${w}.`] }; }
+    case 2: { const [w, e] = pick(PICS);
+      return { prompt: 'Which word matches the picture?', visual: e, kind: 'choice', options: choicesFrom(w, PICS.map(p => p[0])), answer: w,
+        why: [`The picture is a ${w}.`, `Sound out each letter: ${spellOut(w)}.`, `Blend the sounds together: ${w}.`] }; }
+    case 3: { const pool = PICS.filter(([w]) => 'aeiou'.includes(w[1])), [w, e] = pick(pool);
+      return { prompt: 'Which letter is missing?', visual: `${e}<span class="word">${w[0]}_${w.slice(2)}</span>`, say: `Which letter is missing in ${w}?`, kind: 'choice', options: choicesFrom(w[1], ['a', 'e', 'i', 'o', 'u']), answer: w[1],
+        why: [`Say "${w}" slowly: ${spellOut(w)}.`, `The sound in the middle is "${w[1]}".`, `So the word is ${w}.`] }; }
+    case 4: { const f = pick(RHYMES), [w, a] = shuffle(f), others = RHYMES.filter(x => x !== f).flat();
+      return { prompt: `Which word rhymes with "${w}"?`, say: `Which word rhymes with ${w}?`, kind: 'choice', options: choicesFrom(a, others), answer: a,
+        why: [`Rhyming words end with the same sound.`, `${w} and ${a} both end in "${rhymeEnd(w, a)}".`, `Say them together: ${w}, ${a}!`] }; }
+    case 5: { const [w, e] = pick(PICS2);
+      return { prompt: 'Which spelling is right?', visual: e, say: `Which is the right way to spell ${w}?`, kind: 'choice', options: shuffle([w, ...misspell(w)]), answer: w,
+        why: [`Say "${w}" slowly and listen for each sound.`, `${w} is spelled ${spellOut(w)}.`] }; }
+    case 6: { const [w, a] = shuffle(pick(OPPOSITES));
+      return { prompt: `What is the opposite of "${w}"?`, say: `What is the opposite of ${w}?`, kind: 'choice', options: choicesFrom(a, OPPOSITES.flat().filter(x => x !== w)), answer: a,
+        why: [`Opposites mean completely different things.`, `If something is not ${w} at all, it is ${a}.`, `${w} ↔ ${a}`] }; }
+    case 7: { const [s, p, ...wr] = pick(PLURALS);
+      return { prompt: `One ${s}, two ...?`, say: `One ${s}, two what?`, kind: 'choice', options: shuffle([p, ...wr]), answer: p, why: pluralWhy(s, p) }; }
+    case 8: { const [w, wr, tip] = pick(TRICKY);
+      return { prompt: 'Which spelling is right?', say: `Which is the right way to spell ${w}?`, kind: 'choice', options: shuffle([w, ...wr]), answer: w,
+        why: [`${w} is spelled ${spellOut(w)}.`, tip] }; }
+    case 9: { const [w, a, ...wr] = pick(SYNONYMS);
+      return { prompt: `Which word means the same as "${w}"?`, say: `Which word means the same as ${w}?`, kind: 'choice', options: shuffle([a, ...wr]), answer: a,
+        why: [`Words that mean the same thing are called synonyms.`, `${w} and ${a} mean nearly the same thing.`, `You could swap "${w}" for "${a}" in a sentence and it would still make sense.`] }; }
+    default: { if (Math.random() < .5) { const [s, a, wr, tip] = pick(HOMOPHONES);
+        return { prompt: 'Which word fits?', visual: `<div class="sentence">${esc(s)}</div>`, say: 'Which word fits in the gap?', kind: 'choice', options: shuffle([a, ...wr]), answer: a,
+          why: [`These words sound the same but mean different things.`, tip, `So it's: ${s.replace('___', a)}`] }; }
+      const [w, a, wr, ex] = pick(MEANINGS);
+      return { prompt: `What does "${w}" mean?`, say: `What does ${w} mean?`, kind: 'choice', options: shuffle([a, ...wr]), answer: a,
+        why: [`"${w}" means ${a}.`, `For example: ${ex}`] }; }
+  }
+}
+
+/* ---------- Geography ---------- */
+const C = (n, f, cap, cont, t) => ({ n, f, cap, cont, t });
+const COUNTRIES = [
+  C('United States', '🇺🇸', 'Washington, D.C.', 'North America', 1), C('United Kingdom', '🇬🇧', 'London', 'Europe', 1), C('India', '🇮🇳', 'New Delhi', 'Asia', 1),
+  C('Japan', '🇯🇵', 'Tokyo', 'Asia', 1), C('Canada', '🇨🇦', 'Ottawa', 'North America', 1), C('Australia', '🇦🇺', 'Canberra', 'Oceania', 1),
+  C('France', '🇫🇷', 'Paris', 'Europe', 1), C('Brazil', '🇧🇷', 'Brasília', 'South America', 1), C('China', '🇨🇳', 'Beijing', 'Asia', 1),
+  C('Italy', '🇮🇹', 'Rome', 'Europe', 1), C('Egypt', '🇪🇬', 'Cairo', 'Africa', 1), C('Mexico', '🇲🇽', 'Mexico City', 'North America', 1),
+  C('Germany', '🇩🇪', 'Berlin', 'Europe', 1), C('Spain', '🇪🇸', 'Madrid', 'Europe', 1),
+  C('Kenya', '🇰🇪', 'Nairobi', 'Africa', 2), C('Nigeria', '🇳🇬', 'Abuja', 'Africa', 2), C('South Africa', '🇿🇦', null, 'Africa', 2),
+  C('Argentina', '🇦🇷', 'Buenos Aires', 'South America', 2), C('Greece', '🇬🇷', 'Athens', 'Europe', 2), C('Ireland', '🇮🇪', 'Dublin', 'Europe', 2),
+  C('Norway', '🇳🇴', 'Oslo', 'Europe', 2), C('Sweden', '🇸🇪', 'Stockholm', 'Europe', 2), C('South Korea', '🇰🇷', 'Seoul', 'Asia', 2),
+  C('Thailand', '🇹🇭', 'Bangkok', 'Asia', 2), C('New Zealand', '🇳🇿', 'Wellington', 'Oceania', 2), C('Portugal', '🇵🇹', 'Lisbon', 'Europe', 2),
+  C('Netherlands', '🇳🇱', 'Amsterdam', 'Europe', 2), C('Pakistan', '🇵🇰', 'Islamabad', 'Asia', 2), C('Bangladesh', '🇧🇩', 'Dhaka', 'Asia', 2),
+  C('Peru', '🇵🇪', 'Lima', 'South America', 2), C('Chile', '🇨🇱', 'Santiago', 'South America', 2), C('Russia', '🇷🇺', 'Moscow', null, 2),
+  C('Morocco', '🇲🇦', 'Rabat', 'Africa', 3), C('Ghana', '🇬🇭', 'Accra', 'Africa', 3), C('Ethiopia', '🇪🇹', 'Addis Ababa', 'Africa', 3),
+  C('Vietnam', '🇻🇳', 'Hanoi', 'Asia', 3), C('Poland', '🇵🇱', 'Warsaw', 'Europe', 3), C('Switzerland', '🇨🇭', 'Bern', 'Europe', 3),
+  C('Austria', '🇦🇹', 'Vienna', 'Europe', 3), C('Denmark', '🇩🇰', 'Copenhagen', 'Europe', 3), C('Finland', '🇫🇮', 'Helsinki', 'Europe', 3),
+  C('Colombia', '🇨🇴', 'Bogotá', 'South America', 3), C('Cuba', '🇨🇺', 'Havana', 'North America', 3), C('Jamaica', '🇯🇲', 'Kingston', 'North America', 3),
+  C('Saudi Arabia', '🇸🇦', 'Riyadh', 'Asia', 3), C('Nepal', '🇳🇵', 'Kathmandu', 'Asia', 3), C('Philippines', '🇵🇭', 'Manila', 'Asia', 3),
+  C('Malaysia', '🇲🇾', 'Kuala Lumpur', 'Asia', 3), C('Iceland', '🇮🇸', 'Reykjavík', 'Europe', 3), C('Fiji', '🇫🇯', 'Suva', 'Oceania', 3),
+  C('Tanzania', '🇹🇿', 'Dodoma', 'Africa', 3), C('Turkey', '🇹🇷', 'Ankara', null, 3), C('Indonesia', '🇮🇩', null, 'Asia', 3),
+];
+const FLAG_TIPS = {
+  'United States': 'Look for 50 white stars (one for each state) and 13 red and white stripes.',
+  'United Kingdom': 'It is called the Union Jack. It mixes three crosses in red, white and blue.',
+  'India': 'Orange, white and green stripes with a blue wheel in the middle, called the Ashoka Chakra.',
+  'Japan': 'A red circle on white. It stands for the rising sun.',
+  'Canada': 'Look for the red maple leaf in the middle.',
+  'Australia': 'The white stars are the Southern Cross, stars you can see from Australia.',
+  'France': 'Three stripes going up and down: blue, white and red.',
+  'Brazil': 'A blue globe full of stars inside a yellow diamond on green.',
+  'China': 'Red with five yellow stars in the corner.',
+  'Italy': 'Three stripes going up and down: green, white and red.',
+  'Egypt': 'Red, white and black stripes with a golden eagle in the middle.',
+  'Mexico': 'In the middle there is an eagle eating a snake on a cactus.',
+  'Germany': 'Three stripes going across: black, red and gold.',
+  'Spain': 'Red and yellow stripes, and the yellow one is extra wide.',
+  'Kenya': 'Look for the Maasai shield and two spears in the middle.',
+  'South Korea': 'A red and blue circle in the middle with black bars around it.',
+  'Greece': 'Nine blue and white stripes with a white cross.',
+  'Ireland': 'Green, white and orange stripes going up and down.',
+  'Norway': 'A blue cross with white edges on red, shifted to one side.',
+  'Sweden': 'A yellow cross on blue, shifted to one side.',
+  'Switzerland': 'A white cross on red. The flag is a square!',
+  'Nepal': 'It is the only country flag that is not a rectangle.',
+  'Argentina': 'Light blue and white stripes with a sun that has a face.',
+  'South Africa': 'A sideways Y shape with six colours.',
+};
+const CAP_TIPS = {
+  'Australia': 'Lots of people guess Sydney, but the capital is Canberra.',
+  'Canada': 'Not Toronto! The capital is Ottawa.',
+  'United States': 'Not New York! The capital is Washington, D.C.',
+  'Brazil': 'Not Rio de Janeiro! Brasília was built to be the capital.',
+  'Turkey': 'Not Istanbul! The capital is Ankara.',
+  'Switzerland': 'Not Zurich or Geneva! The capital is Bern.',
+  'New Zealand': 'Not Auckland! The capital is Wellington.',
+  'Nigeria': 'Not Lagos! The capital is Abuja.',
+  'Morocco': 'Not Casablanca! The capital is Rabat.',
+  'Pakistan': 'Not Karachi! The capital is Islamabad.',
+  'Tanzania': 'Not Dar es Salaam! The capital is Dodoma.',
+  'India': 'New Delhi is part of the big city of Delhi.',
+};
+const CONT_TIPS = {
+  'Europe': 'Europe has lots of countries close together, like France, Germany and Spain.',
+  'Asia': 'Asia is the biggest continent, with countries like China, India and Japan.',
+  'Africa': 'Africa is a huge continent, with countries like Egypt, Kenya and Nigeria.',
+  'North America': 'North America includes Canada, the United States, Mexico and the Caribbean islands.',
+  'South America': 'South America includes Brazil, Argentina, Peru and Chile.',
+  'Oceania': 'Oceania is Australia, New Zealand and lots of islands in the Pacific Ocean.',
+};
+// "the United States", "the Netherlands"...
+const theName = (n, cap) => /^(United|Netherlands|Philippines)/.test(n) ? (cap ? 'The ' : 'the ') + n : n;
+const countryLine = (c, withCap = true) => `${theName(c.n, true)} is in ${c.cont || 'both Europe and Asia'}${withCap && c.cap ? ` and its capital city is ${c.cap}` : ''}.`.replace('..', '.');
+const CONTS = ['Africa', 'Asia', 'Europe', 'North America', 'South America', 'Oceania', 'Antarctica'];
+const LANDMARKS = [
+  ['🗼', 'the Eiffel Tower', 'France', 'It stands in Paris and was built in 1889.'],
+  ['🗽', 'the Statue of Liberty', 'United States', 'It stands in New York and was a gift from France.'],
+  ['🕌', 'the Taj Mahal', 'India', 'It is in the city of Agra and is made of white marble.'],
+  ['🧱', 'the Great Wall', 'China', 'It was built to protect China and is thousands of kilometres long.'],
+  ['🔺', 'the Pyramids of Giza', 'Egypt', 'They were built over 4,000 years ago, near Cairo.'],
+  ['🕰️', 'Big Ben', 'United Kingdom', 'Big Ben is the giant bell inside the clock tower in London.'],
+  ['🎭', 'the Sydney Opera House', 'Australia', 'Its roof looks like sails on the water in Sydney.'],
+  ['🏛️', 'the Colosseum', 'Italy', 'Romans watched shows here almost 2,000 years ago, in Rome.'],
+  ['🗻', 'Mount Fuji', 'Japan', 'It is a volcano and the tallest mountain in Japan.'],
+  ['⛪', 'the Sagrada Família', 'Spain', 'It is a church in Barcelona that has been being built for over 140 years.'],
+  ['🍁', 'Niagara Falls (Horseshoe Falls)', 'Canada', 'The big horseshoe-shaped waterfall is on the Canadian side.'],
+  ['🦁', 'the Maasai Mara', 'Kenya', 'It is a huge park where lions, zebras and giraffes live.'],
+  ['⛰️', 'Machu Picchu', 'Peru', 'It is an old Inca city high up in the Andes mountains.'],
+];
+const FACTS = [
+  ['🌍', 'How many continents are there?', '7', ['5', '6', '9'], 'They are Africa, Antarctica, Asia, Europe, North America, Oceania and South America.'],
+  ['🌊', 'Which is the biggest ocean?', 'Pacific', ['Atlantic', 'Indian', 'Arctic'], 'The Pacific is so big that all the land on Earth could fit inside it.'],
+  ['🗺️', 'Which is the biggest continent?', 'Asia', ['Africa', 'Europe', 'Oceania'], 'Asia has more land and more people than any other continent.'],
+  ['🏔️', 'Which is the highest mountain in the world?', 'Mount Everest', ['Kilimanjaro', 'Mont Blanc', 'Mount Fuji'], 'Everest is 8,849 metres tall, in the Himalayas between Nepal and China.'],
+  ['🏜️', 'Which is the biggest hot desert?', 'Sahara', ['Gobi', 'Kalahari', 'Atacama'], 'The Sahara covers most of North Africa. It is almost as big as the United States.'],
+  ['🧊', 'Which is the coldest continent?', 'Antarctica', ['Europe', 'Asia', 'North America'], 'Antarctica is at the South Pole and is covered in thick ice all year.'],
+  ['🌳', 'Which is the biggest rainforest?', 'Amazon', ['Congo', 'Daintree', 'Black Forest'], 'The Amazon rainforest is in South America, mostly in Brazil.'],
+  ['🌅', 'Which way does the sun rise?', 'East', ['West', 'North', 'South'], 'The sun rises in the east and sets in the west.'],
+  ['🐧', 'Which continent has the most penguins?', 'Antarctica', ['Africa', 'Europe', 'Asia'], 'Emperor and Adélie penguins live on the ice around Antarctica.'],
+  ['👨‍👩‍👧', 'Which country has the most people?', 'India', ['United States', 'Brazil', 'Russia'], 'India has more than 1.4 billion people, just ahead of China.'],
+  ['📏', 'Which is the biggest country by land?', 'Russia', ['China', 'Canada', 'United States'], 'Russia is so wide that it has 11 time zones.'],
+  ['🏝️', 'Which is the biggest island?', 'Greenland', ['Madagascar', 'Iceland', 'Ireland'], 'Australia is bigger, but it counts as a continent, so Greenland is the biggest island.'],
+  ['🌐', 'How many oceans are there?', '5', ['3', '7', '10'], 'They are the Pacific, Atlantic, Indian, Southern and Arctic oceans.'],
+  ['⛵', 'Which ocean is between Europe and North America?', 'Atlantic', ['Pacific', 'Indian', 'Southern'], 'Ships sailing from Europe to America cross the Atlantic.'],
+  ['🦘', 'Which is the smallest continent?', 'Oceania', ['Europe', 'Africa', 'Antarctica'], 'Oceania is Australia, New Zealand and many Pacific islands.'],
+];
+const PLACES = [
+  ['🏞️', 'The Amazon River flows mostly through which country?', 'Brazil', ['India', 'Egypt', 'Canada'], 'The Amazon starts in the mountains of Peru and flows across Brazil to the Atlantic Ocean.'],
+  ['🏞️', 'The Ganges River flows through which country?', 'India', ['Brazil', 'France', 'Mexico'], 'The Ganges flows from the Himalayas across northern India.'],
+  ['🏞️', 'The River Thames flows through which city?', 'London', ['Paris', 'Rome', 'Tokyo'], 'The Thames flows right through the middle of London, past Big Ben.'],
+  ['🏞️', 'The River Seine flows through which city?', 'Paris', ['London', 'Madrid', 'Cairo'], 'The Seine flows through Paris, past the Eiffel Tower.'],
+  ['🏞️', 'The Nile flows into the sea in which country?', 'Egypt', ['Kenya', 'Brazil', 'India'], 'The Nile flows north and reaches the Mediterranean Sea in Egypt.'],
+  ['🏞️', 'The Mississippi River is in which country?', 'United States', ['Australia', 'Japan', 'Spain'], 'It flows down the middle of the United States to the Gulf of Mexico.'],
+  ['🏞️', 'The Yangtze River is in which country?', 'China', ['Mexico', 'Germany', 'Peru'], 'The Yangtze is the longest river in China and in all of Asia.'],
+  ['🏔️', 'Mount Kilimanjaro is in which country?', 'Tanzania', ['Nepal', 'Chile', 'Iceland'], 'Kilimanjaro is the highest mountain in Africa.'],
+  ['🪨', 'Uluru, the giant red rock, is in which country?', 'Australia', ['Egypt', 'Canada', 'Norway'], 'Uluru is in the middle of Australia and is a sacred place for Aboriginal people.'],
+  ['🏔️', 'The Himalayas are on which continent?', 'Asia', ['Europe', 'Africa', 'South America'], 'The Himalayas have the world\'s highest mountains, including Everest.'],
+  ['🏔️', 'The Andes mountains are on which continent?', 'South America', ['Asia', 'Europe', 'Africa'], 'The Andes run all the way down the west side of South America.'],
+  ['🏔️', 'The Alps are on which continent?', 'Europe', ['Asia', 'North America', 'Oceania'], 'The Alps go through Switzerland, France, Italy and Austria.'],
+  ['🏔️', 'The Rocky Mountains are on which continent?', 'North America', ['Africa', 'Europe', 'Oceania'], 'The Rockies stretch through Canada and the United States.'],
+  ['🏜️', 'The Sahara Desert is on which continent?', 'Africa', ['Asia', 'South America', 'Europe'], 'The Sahara covers most of North Africa.'],
+];
+function geo(L) {
+  const T1 = COUNTRIES.filter(c => c.t === 1), T12 = COUNTRIES.filter(c => c.t <= 2), T2 = COUNTRIES.filter(c => c.t === 2), T23 = COUNTRIES.filter(c => c.t >= 2), T3 = COUNTRIES.filter(c => c.t === 3);
+  const flagQ = pool => { const c = pick(pool);
+    return { prompt: 'Which country has this flag?', visual: `<div class="flag">${c.f}</div>`, kind: 'choice', options: choicesFrom(c.n, pool.map(x => x.n)), answer: c.n,
+      why: [`This is the flag of ${theName(c.n)}.`, ...(FLAG_TIPS[c.n] ? [FLAG_TIPS[c.n]] : []), countryLine(c)] }; };
+  const contQ = pool => { const c = pick(pool.filter(x => x.cont));
+    return { prompt: `Which continent is ${c.n} in?`, visual: `<div class="flag">${c.f}</div>`, kind: 'choice', options: choicesFrom(c.cont, CONTS.filter(x => x !== 'Antarctica')), answer: c.cont,
+      why: [countryLine(c, false), CONT_TIPS[c.cont]] }; };
+  const capQ = pool => { const p = pool.filter(x => x.cap), c = pick(p);
+    return { prompt: `What is the capital city of ${c.n}?`, visual: `<div class="flag">${c.f}</div>`, kind: 'choice', options: choicesFrom(c.cap, p.map(x => x.cap)), answer: c.cap,
+      why: [`A capital city is where a country's leaders and government work.`, `The capital of ${theName(c.n)} is ${c.cap}.`.replace('..', '.'), ...(CAP_TIPS[c.n] ? [CAP_TIPS[c.n]] : []), countryLine(c, false)] }; };
+  const fixed = ([e, q, a, wr, tip]) => ({ prompt: q, visual: e, kind: 'choice', options: shuffle([a, ...wr]), answer: a, why: [`The answer is ${a}.`, tip] });
+  switch (L) {
+    case 1: return flagQ(T1);
+    case 2: return contQ(T1);
+    case 3: return capQ(T1);
+    case 4: { const [e, name, c, tip] = pick(LANDMARKS), country = COUNTRIES.find(x => x.n === c);
+      return { prompt: `Which country is ${name} in?`, visual: e, kind: 'choice', options: choicesFrom(c, LANDMARKS.map(x => x[2])), answer: c,
+        why: [`${name[0].toUpperCase() + name.slice(1)} is in ${theName(c)}.`, tip, ...(country ? [countryLine(country)] : [])] }; }
+    case 5: return flagQ(T12);
+    case 6: return fixed(pick(FACTS));
+    case 7: return capQ(T2);
+    case 8: return contQ(T23);
+    case 9: return fixed(pick(PLACES));
+    default: return Math.random() < .5 ? flagQ(T3) : capQ(T3);
+  }
+}
+const GEN = { maths, words, numbers, geo };
+
+/* ---------- Bud shop ---------- */
+const SHOP = {
+  color: { label: 'Colours', items: [
+    { id: 'c-sun', name: 'Sunny', price: 0, fill: '#FFC93C', belly: '#FFE9A8', foot: '#E0A21A' },
+    { id: 'c-mint', name: 'Mint', price: 0, fill: '#5FD3A5', belly: '#CDF4E3', foot: '#2E9E72' },
+    { id: 'c-bubble', name: 'Bubblegum', price: 0, fill: '#FF8FC7', belly: '#FFD9EC', foot: '#D9579A' },
+    { id: 'c-sky', name: 'Sky', price: 0, fill: '#5BB4FF', belly: '#D2EAFF', foot: '#2C7FD0' },
+    { id: 'c-lava', name: 'Lava', price: 35, fill: '#FF6A3D', belly: '#FFC7AE', foot: '#C2421A' },
+    { id: 'c-grape', name: 'Grape', price: 35, fill: '#A77BF3', belly: '#E2D4FF', foot: '#7448C4' },
+    { id: 'c-galaxy', name: 'Galaxy', price: 120, fill: 'url(#bb-galaxy)', belly: '#C6B8FF', foot: '#2A2466', swatch: 'linear-gradient(135deg,#2A2466,#6B4BD8 55%,#F07FD2)' },
+    { id: 'c-rainbow', name: 'Rainbow', price: 200, fill: 'url(#bb-rainbow)', belly: '#FFFFFF', foot: '#5B6B8C', swatch: 'linear-gradient(135deg,#FF6A4D,#FFC93C,#5FD3A5,#5BB4FF,#A77BF3)' },
+  ] },
+  hat: { label: 'Hats', items: [
+    { id: 'h-none', name: 'No hat', price: 0 }, { id: 'h-party', name: 'Party hat', price: 25 }, { id: 'h-cap', name: 'Cap', price: 30 },
+    { id: 'h-top', name: 'Top hat', price: 50 }, { id: 'h-wizard', name: 'Wizard hat', price: 70 }, { id: 'h-viking', name: 'Viking helmet', price: 90 }, { id: 'h-crown', name: 'Crown', price: 150 },
+  ] },
+  eyes: { label: 'Eyes', items: [
+    { id: 'e-normal', name: 'Bright eyes', price: 0 }, { id: 'e-glasses', name: 'Glasses', price: 30 }, { id: 'e-shades', name: 'Cool shades', price: 45 }, { id: 'e-star', name: 'Star eyes', price: 80 },
+  ] },
+  extra: { label: 'Extras', items: [
+    { id: 'x-none', name: 'Nothing', price: 0 }, { id: 'x-bow', name: 'Bow tie', price: 20 }, { id: 'x-scarf', name: 'Scarf', price: 35 }, { id: 'x-cape', name: 'Hero cape', price: 60 }, { id: 'x-wings', name: 'Wings', price: 140 },
+  ] },
+  pet: { label: 'Pets', items: [
+    { id: 'p-none', name: 'No pet', price: 0, e: '' }, { id: 'p-chick', name: 'Chick', price: 50, e: '🐥' }, { id: 'p-kitty', name: 'Kitty', price: 90, e: '🐱' },
+    { id: 'p-puppy', name: 'Puppy', price: 90, e: '🐶' }, { id: 'p-owl', name: 'Owl', price: 120, e: '🦉' }, { id: 'p-unicorn', name: 'Unicorn', price: 220, e: '🦄' }, { id: 'p-dragon', name: 'Dragon', price: 300, e: '🐉' },
+  ] },
+  world: { label: 'Worlds', items: [
+    { id: 'w-meadow', name: 'Meadow', price: 0, bg: 'linear-gradient(#BDE8FF 0 64%,#7ED37E 64%)' },
+    { id: 'w-beach', name: 'Beach', price: 40, bg: 'linear-gradient(#A6DDFF 0 52%,#4FB8E8 52% 68%,#FFE1A1 68%)' },
+    { id: 'w-snow', name: 'Snowy', price: 60, bg: 'linear-gradient(#DCE9FF 0 62%,#FFFFFF 62%)' },
+    { id: 'w-space', name: 'Space', price: 110, bg: 'radial-gradient(circle at 20% 25%,#fff 0 2px,transparent 3px),radial-gradient(circle at 75% 15%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 85% 60%,#fff 0 2px,transparent 3px),radial-gradient(circle at 12% 70%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 55% 40%,#FFE08A 0 2px,transparent 3px),radial-gradient(circle at 80% 85%,#9C8CFF 0 26px,transparent 27px),linear-gradient(#141A44,#2B2470)' },
+    { id: 'w-volcano', name: 'Volcano', price: 130, bg: 'linear-gradient(#FFB38A 0 58%,#6E3427 58%)' },
+  ] },
+};
+const ITEMS = {}; for (const [cat, c] of Object.entries(SHOP)) for (const it of c.items) ITEMS[it.id] = { ...it, cat };
+const STAGES = [[0, 'Little Seed'], [50, 'Sprout'], [200, 'Leafy Bud'], [500, 'Bloom Star'], [1000, 'Mighty Bloom']];
+const stageOf = life => { let i = 0; STAGES.forEach(([t], k) => { if (life >= t) i = k; }); return i; };
+
+function budSVG(eq, stage = 0) {
+  const col = ITEMS[eq.color] || ITEMS['c-sun'], pet = ITEMS[eq.pet], hasPet = pet && pet.e, dx = hasPet ? 0 : 20, ink = '#1B2A4A';
+  let s = `<svg viewBox="0 0 260 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <linearGradient id="bb-galaxy" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2A2466"/><stop offset=".55" stop-color="#6B4BD8"/><stop offset="1" stop-color="#F07FD2"/></linearGradient>
+    <linearGradient id="bb-rainbow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF6A4D"/><stop offset=".25" stop-color="#FFC93C"/><stop offset=".5" stop-color="#5FD3A5"/><stop offset=".75" stop-color="#5BB4FF"/><stop offset="1" stop-color="#A77BF3"/></linearGradient>
+  </defs><g transform="translate(${dx} 0)">`;
+  if (eq.extra === 'x-wings') s += `<g fill="#fff" stroke="${ink}" stroke-width="4"><path d="M44 118 C10 90 2 140 18 158 C26 150 34 150 44 152 Z"/><path d="M176 118 C210 90 218 140 202 158 C194 150 186 150 176 152 Z"/></g>`;
+  if (eq.extra === 'x-cape') s += `<path d="M62 104 Q110 124 158 104 L196 214 Q110 236 24 214 Z" fill="#E5484D" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>`;
+  s += `<ellipse cx="80" cy="206" rx="22" ry="11" fill="${col.foot}" stroke="${ink}" stroke-width="4"/><ellipse cx="140" cy="206" rx="22" ry="11" fill="${col.foot}" stroke="${ink}" stroke-width="4"/>`;
+  s += `<path d="M110 62 C162 62 188 100 188 140 C188 184 154 208 110 208 C66 208 32 184 32 140 C32 100 58 62 110 62 Z" fill="${col.fill}" stroke="${ink}" stroke-width="4"/>`;
+  s += `<ellipse cx="110" cy="170" rx="44" ry="30" fill="${col.belly}" opacity=".75"/>`;
+  if (eq.hat === 'h-none' || !eq.hat) {
+    const leaf = (flip) => `<path d="M110 50 C${flip ? 82 : 138} 26 ${flip ? 66 : 154} 40 ${flip ? 70 : 150} 52 C${flip ? 86 : 134} 60 ${flip ? 100 : 120} 58 110 50 Z" fill="#3DB66A" stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"/>`;
+    s += `<path d="M110 64 L110 ${stage >= 1 ? 44 : 54}" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>`;
+    if (stage === 0) s += `<ellipse cx="110" cy="52" rx="7" ry="5" fill="#3DB66A" stroke="${ink}" stroke-width="3"/>`;
+    if (stage >= 1) s += leaf(false);
+    if (stage >= 2) s += leaf(true);
+    if (stage >= 3) { s += `<g stroke="${ink}" stroke-width="3">`; for (let i = 0; i < 5; i++) { const a = i * 72 * Math.PI / 180; s += `<circle cx="${110 + Math.cos(a) * 9}" cy="${32 + Math.sin(a) * 9}" r="7" fill="${stage >= 4 ? '#FFB703' : '#FF8FC7'}"/>`; } s += `<circle cx="110" cy="32" r="6" fill="#FFE08A"/></g>`; }
+  }
+  // eyes
+  const eye = (x) => `<circle cx="${x}" cy="122" r="15" fill="#fff" stroke="${ink}" stroke-width="3.5"/><circle cx="${x + 2}" cy="124" r="7.5" fill="${ink}"/><circle cx="${x + 5}" cy="120" r="2.6" fill="#fff"/>`;
+  if (eq.eyes === 'e-star') {
+    const star = (x) => { let p = ''; for (let i = 0; i < 10; i++) { const r = i % 2 ? 7 : 17, a = (i * 36 - 90) * Math.PI / 180; p += `${(x + Math.cos(a) * r).toFixed(1)},${(122 + Math.sin(a) * r).toFixed(1)} `; } return `<polygon points="${p}" fill="#FFB703" stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"/>`; };
+    s += star(88) + star(132);
+  } else if (eq.eyes === 'e-shades') {
+    s += `<g stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"><path d="M64 110 H106 V124 Q106 138 86 138 Q64 138 64 122 Z" fill="${ink}"/><path d="M114 110 H156 V122 Q156 138 134 138 Q114 138 114 124 Z" fill="${ink}"/><path d="M106 114 H114" /><path d="M64 112 L50 106 M156 112 L170 106"/></g><path d="M72 116 L82 116 M122 116 L132 116" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`;
+  } else {
+    s += eye(88) + eye(132);
+    if (eq.eyes === 'e-glasses') s += `<g fill="none" stroke="${ink}" stroke-width="4"><circle cx="88" cy="122" r="21"/><circle cx="132" cy="122" r="21"/><path d="M109 120 Q110 116 111 120"/><path d="M67 118 L50 112 M153 118 L170 112"/></g>`;
+  }
+  s += `<circle cx="68" cy="150" r="9" fill="#FF7A9A" opacity=".55"/><circle cx="152" cy="150" r="9" fill="#FF7A9A" opacity=".55"/>`;
+  s += `<path d="M96 150 Q110 166 124 150" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>`;
+  if (eq.extra === 'x-bow') s += `<g stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"><path d="M110 178 L88 166 L88 190 Z" fill="#E5484D"/><path d="M110 178 L132 166 L132 190 Z" fill="#E5484D"/><circle cx="110" cy="178" r="6" fill="#FFB703"/></g>`;
+  if (eq.extra === 'x-scarf') s += `<g stroke="${ink}" stroke-width="3.5" stroke-linejoin="round"><path d="M50 166 Q110 190 170 166 L172 182 Q110 206 48 182 Z" fill="#3D7BFD"/><path d="M140 186 L150 218 L166 214 L156 180 Z" fill="#3D7BFD"/></g><path d="M70 176 L72 186 M96 182 L97 192 M124 182 L123 192 M150 176 L148 186" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`;
+  const H = {
+    'h-party': `<polygon points="84,74 136,74 110,10" fill="#FF6A4D" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M92 58 L128 58 M100 40 L120 40" stroke="#FFE08A" stroke-width="5"/><circle cx="110" cy="10" r="8" fill="#FFB703" stroke="${ink}" stroke-width="3"/>`,
+    'h-cap': `<path d="M68 82 Q70 38 110 38 Q150 38 152 82 Z" fill="#3D7BFD" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M146 76 Q182 72 190 86 Q160 90 146 84 Z" fill="#2152C2" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><circle cx="110" cy="38" r="5" fill="#FFB703" stroke="${ink}" stroke-width="3"/>`,
+    'h-top': `<rect x="80" y="14" width="60" height="58" rx="4" fill="${ink}"/><rect x="80" y="54" width="60" height="10" fill="#E5484D"/><rect x="62" y="66" width="96" height="12" rx="6" fill="${ink}"/>`,
+    'h-wizard': `<path d="M66 78 L118 0 L154 78 Z" fill="#4B3FA8" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><ellipse cx="110" cy="78" rx="56" ry="10" fill="#4B3FA8" stroke="${ink}" stroke-width="4"/><path d="M104 40 l3 6 6 1 -4.5 4 1 6 -5.5-3 -5.5 3 1-6 -4.5-4 6-1z M126 60 l2 4 4 .6 -3 2.8 .7 4 -3.7-2 -3.7 2 .7-4 -3-2.8 4-.6z" fill="#FFE08A"/>`,
+    'h-viking': `<path d="M78 70 Q52 66 50 30 Q66 54 86 56 Z" fill="#FFF3D6" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M142 70 Q168 66 170 30 Q154 54 134 56 Z" fill="#FFF3D6" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M70 84 Q70 36 110 36 Q150 36 150 84 Z" fill="#B8C2CC" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><rect x="66" y="76" width="88" height="12" rx="6" fill="#8A97A6" stroke="${ink}" stroke-width="4"/>`,
+    'h-crown': `<polygon points="74,80 74,36 92,56 110,26 128,56 146,36 146,80" fill="#FFB703" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><circle cx="92" cy="70" r="5" fill="#E5484D"/><circle cx="110" cy="68" r="6" fill="#3D7BFD"/><circle cx="128" cy="70" r="5" fill="#22A95B"/>`,
+  };
+  s += H[eq.hat] || '';
+  s += '</g>';
+  if (hasPet) s += `<text x="224" y="226" font-size="48" text-anchor="middle">${pet.e}</text>`;
+  return s + '</svg>';
+}
+function setStage(el, eq, stage, cls) { el.style.background = (ITEMS[eq.world] || ITEMS['w-meadow']).bg; el.innerHTML = budSVG(eq, stage); }
+
+/* ---------- Sound, speech, effects ---------- */
+let actx = null;
+function tone(f, d, t = 0, type = 'sine', v = .14) {
+  if (!S.sound) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+    const o = actx.createOscillator(), g = actx.createGain(), st = actx.currentTime + t;
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(v, st + .02); g.gain.exponentialRampToValueAtTime(.001, st + d);
+    o.connect(g); g.connect(actx.destination); o.start(st); o.stop(st + d + .05);
+  } catch (e) {}
+}
+const sfx = {
+  right() { tone(660, .14); tone(990, .28, .1); },
+  wrong() { tone(260, .18, 0, 'triangle'); tone(200, .3, .14, 'triangle'); },
+  level() { [523, 659, 784, 1047].forEach((f, i) => tone(f, .22, i * .09, 'square', .06)); },
+  coin() { tone(988, .08, 0, 'square', .06); tone(1319, .3, .07, 'square', .06); },
+  tap() { tone(520, .05, 0, 'sine', .06); },
+};
+// Browsers don't say which voices are women's, so match known names (iPad/Mac first, then Chrome, Windows, Android)
+const FEMALE_VOICES = ['Samantha', 'Ava', 'Allison', 'Susan', 'Zoe', 'Nicky', 'Serena', 'Kate', 'Stephanie', 'Martha', 'Karen', 'Catherine', 'Moira', 'Tessa', 'Fiona', 'Victoria', 'Veena', 'Isha',
+  'Google UK English Female', 'Google US English', 'Aria', 'Jenny', 'Zira', 'Hazel', 'Libby', 'Sonia', 'Natasha', 'Michelle', 'Emma', 'Linda', 'Heera', 'Clara', 'Heather', 'Amy', 'Joanna', 'Salli', 'Kimberly', 'Ivy', 'Olivia', 'Matilda', 'Female'];
+let voices = [];
+function loadVoices() { try { voices = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang)); } catch (e) { voices = []; } }
+const femaleRank = v => FEMALE_VOICES.findIndex(n => v.name.includes(n));
+const voiceQuality = v => /Premium|Enhanced|Natural|Neural/i.test(v.name) ? 1 : 0;
+const femaleVoices = () => voices.filter(v => femaleRank(v) >= 0).sort((a, b) => voiceQuality(b) - voiceQuality(a) || femaleRank(a) - femaleRank(b));
+function pickVoice() {
+  if (!voices.length) loadVoices();
+  return (S.voice && voices.find(v => v.name === S.voice)) || femaleVoices()[0] || null;
+}
+try { loadVoices(); speechSynthesis.addEventListener('voiceschanged', () => { loadVoices(); if (current === 'gu') renderVoices(); }); } catch (e) {}
+function speak(t) {
+  try {
+    if (!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(t), v = pickVoice();
+    u.rate = .9;
+    if (v) { u.voice = v; u.lang = v.lang; u.pitch = 1.1; } else { u.lang = 'en'; u.pitch = 1.3; }
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); }
+const reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
+function confetti(n = 120) {
+  if (reduced()) return;
+  const c = $('#fx'), x = c.getContext('2d'), dpr = window.devicePixelRatio || 1;
+  c.width = innerWidth * dpr; c.height = innerHeight * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cols = ['#FF6A4D', '#FFB703', '#22A95B', '#3D7BFD', '#9B59D0', '#FF8FC7'];
+  const ps = Array.from({ length: n }, () => ({ x: innerWidth / 2 + rand(-80, 80), y: innerHeight * .35, vx: (Math.random() - .5) * 14, vy: -Math.random() * 14 - 4, r: rand(5, 10), c: pick(cols), a: Math.random() * 6, va: (Math.random() - .5) * .4 }));
+  let frames = 0;
+  (function loop() {
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    let alive = 0;
+    for (const p of ps) { p.vy += .45; p.x += p.vx; p.y += p.vy; p.vx *= .99; p.a += p.va;
+      if (p.y < innerHeight + 20) alive++;
+      x.save(); x.translate(p.x, p.y); x.rotate(p.a); x.fillStyle = p.c; x.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); x.restore(); }
+    if (alive && frames++ < 240) requestAnimationFrame(loop); else x.clearRect(0, 0, innerWidth, innerHeight);
+  })();
+}
+function floatGain(n) {
+  const anchor = $('#quizStars').getBoundingClientRect(), g = document.createElement('div');
+  g.className = 'gain'; g.textContent = `+${n}`;
+  g.style.left = (anchor.left + anchor.width / 2 - 24) + 'px'; g.style.top = (anchor.bottom + 4) + 'px';
+  document.body.appendChild(g); setTimeout(() => g.remove(), 1100);
+}
+
+/* ---------- Screens ---------- */
+let current = 'profiles';
+function show(name) {
+  current = name;
+  document.querySelectorAll('.screen').forEach(el => { el.hidden = el.id !== 's-' + name; });
+  try { speechSynthesis.cancel(); } catch (e) {}
+  ({ profiles: renderProfiles, create: renderCreate, home: renderHome, shop: renderShop, gu: renderGU })[name]?.();
+  const scr = $('#s-' + name); if (scr) scr.scrollTop = 0;
+}
+const starPill = n => `${STAR}<span>${fmt(n)}</span>`;
+
+function renderProfiles() {
+  $('#plist').innerHTML = S.profiles.map(p => `<button class="pcard" data-id="${p.id}"><div class="stage" data-stage="${p.id}"></div><span class="nm">${esc(p.name)}</span><span class="pr">${starPill(p.stars)}</span></button>`).join('')
+    + `<button class="pcard new" id="newPlayer">+ New player</button>`;
+  S.profiles.forEach(p => setStage($(`[data-stage="${p.id}"]`), p.equip, stageOf(p.lifetime)));
+  document.querySelectorAll('.pcard .pr').forEach(el => { el.style.cssText = 'display:inline-flex;align-items:center;gap:.25em;font-family:var(--f-display);font-size:1.1rem'; el.querySelector('svg').style.cssText = 'width:1.2em;height:1.2em'; });
+}
+
+const AGES = [['4–5', 1, 1], ['6–7', 3, 2], ['8–9', 5, 3], ['10+', 7, 5]];
+let draft = { age: 1, color: 'c-sun' };
+function renderCreate() {
+  $('#ageChips').innerHTML = AGES.map(([l], i) => `<button type="button" class="chip" data-age="${i}" aria-pressed="${draft.age === i}">${l}</button>`).join('');
+  $('#colorChips').innerHTML = SHOP.color.items.filter(c => c.price === 0).map(c => `<button type="button" class="colorchip" data-color="${c.id}" style="background:${c.fill}" aria-label="${c.name}" aria-pressed="${draft.color === c.id}"></button>`).join('');
+  setStage($('#createStage'), { color: draft.color, hat: 'h-none', eyes: 'e-normal', extra: 'x-none', pet: 'p-none', world: 'w-meadow' }, 0);
+  $('#createCancel').hidden = !S.profiles.length;
+  $('#createErr').hidden = true;
+}
+function createProfile(name) {
+  const [, start, geoStart] = AGES[draft.age];
+  const freebies = SHOP.color.items.filter(c => c.price === 0).map(c => c.id).concat(Object.values(SHOP).map(c => c.items[0].id));
+  const p = {
+    id: 'p' + Date.now().toString(36), name, stars: 10, lifetime: 0, owned: uniq(freebies),
+    equip: { color: draft.color, hat: 'h-none', eyes: 'e-normal', extra: 'x-none', pet: 'p-none', world: 'w-meadow' },
+    levels: { maths: start, words: start, numbers: start, geo: geoStart },
+    stats: { maths: { r: 0, w: 0 }, words: { r: 0, w: 0 }, numbers: { r: 0, w: 0 }, geo: { r: 0, w: 0 } },
+    readAloud: draft.age <= 1, bestStreak: 0,
+  };
+  S.profiles.push(p); S.current = p.id; save();
+}
+
+function renderHome() {
+  const p = P(); if (!p) return show('profiles');
+  const st = stageOf(p.lifetime), next = STAGES[st + 1];
+  $('#whoMini').innerHTML = budSVG({ ...p.equip, pet: 'p-none' }, st);
+  $('#whoName').textContent = p.name;
+  $('#homeStars').innerHTML = starPill(p.stars);
+  setStage($('#homeStage'), p.equip, st);
+  $('#budName').textContent = `${p.name}'s bud`;
+  $('#budTitle').textContent = STAGES[st][1];
+  if (next) {
+    const pct = Math.round((p.lifetime - STAGES[st][0]) / (next[0] - STAGES[st][0]) * 100);
+    $('#growFill').style.width = pct + '%';
+    $('#growTxt').textContent = `Earn ${fmt(next[0] - p.lifetime)} more stars to grow into a ${next[1]}.`;
+  } else { $('#growFill').style.width = '100%'; $('#growTxt').textContent = 'Fully grown! Your bud is a Mighty Bloom.'; }
+  $('#tiles').innerHTML = SUBJECTS.map(s => { const L = p.levels[s.id];
+    return `<button class="tile" data-s="${s.id}"><span class="glyph">${s.glyph}</span><h3>${s.name}</h3><span class="skill">${SKILLS[s.id][L - 1]}</span>
+      <span class="lvl">Level ${L} of 10</span><span class="meter">${Array.from({ length: 10 }, (_, i) => `<b class="${i < L ? 'on' : ''}"></b>`).join('')}</span></button>`; }).join('');
+}
+
+/* ---------- Quiz round ---------- */
+let R = null;
+const ROUND = 10;
+const starsFor = L => 1 + Math.floor((L - 1) / 3);
+function startRound(sub) {
+  R = { sub, i: 0, correct: 0, earned: 0, streak: 0, rightRun: 0, wrongRun: 0, startLevel: P().levels[sub], results: [], seen: new Set(), token: 0, answered: false, input: '' };
+  const subj = SUBJECTS.find(s => s.id === sub);
+  $('#qtag').style.setProperty('--c', subj.color);
+  show('quiz'); nextQ();
+}
+function nextQ() {
+  if (R.i >= ROUND) return endRound();
+  const L = P().levels[R.sub]; let q, k, tries = 0;
+  do { q = GEN[R.sub](L); k = q.prompt + '|' + (q.visual || '') + '|' + q.answer; } while (R.seen.has(k) && tries++ < 15);
+  R.seen.add(k); R.q = q; R.answered = false; R.input = ''; R.token++;
+  renderQ();
+}
+function renderQ() {
+  const p = P(), q = R.q, L = p.levels[R.sub], subj = SUBJECTS.find(s => s.id === R.sub);
+  $('#qtag').textContent = `${subj.name} · Level ${L} · ${SKILLS[R.sub][L - 1]}`;
+  $('#qprompt').textContent = q.prompt;
+  $('#qvisual').innerHTML = q.visual || ''; $('#qvisual').hidden = !q.visual;
+  $('#quizStars').innerHTML = starPill(p.stars);
+  $('#feedback').hidden = true;
+  renderDots();
+  const box = $('#answers');
+  if (q.kind === 'pad') {
+    box.className = 'padwrap';
+    box.innerHTML = `<div class="paddisp" id="paddisp" aria-live="polite"></div><div class="pad">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="ans" data-k="${n}">${n}</button>`).join('')}<button class="ans" data-k="del" aria-label="Delete">⌫</button><button class="ans" data-k="0">0</button><button class="ans ok" data-k="ok" aria-label="Check answer">✓</button></div>`;
+  } else {
+    const long = q.options.some(o => o.length > 9);
+    box.className = 'answers' + (long ? ' long' : '');
+    box.innerHTML = q.options.map(o => `<button class="ans" data-v="${esc(o)}">${esc(o)}</button>`).join('');
+  }
+  if (p.readAloud) speak(q.say || q.prompt);
+}
+function renderDots() {
+  $('#dots').innerHTML = Array.from({ length: ROUND }, (_, i) => `<i class="${i < R.results.length ? (R.results[i] ? 'r' : 'w') : i === R.i ? 'now' : ''}"></i>`).join('');
+}
+function answer(val) {
+  if (R.answered) return; R.answered = true;
+  const p = P(), q = R.q, L = p.levels[R.sub], ok = val === q.answer, st = p.stats[R.sub];
+  R.results.push(ok);
+  if (ok) {
+    st.r++; R.correct++; R.streak++; R.rightRun++; R.wrongRun = 0;
+    let gain = starsFor(L);
+    if (R.streak % 5 === 0) { gain += 3; setTimeout(() => toast(`${R.streak} in a row! +3 bonus stars`), 300); }
+    p.stars += gain; p.lifetime += gain; R.earned += gain;
+    p.bestStreak = Math.max(p.bestStreak || 0, R.streak);
+    sfx.right(); floatGain(gain);
+    if (R.rightRun >= 4 && L < 10) {
+      p.levels[R.sub] = L + 1; R.rightRun = 0;
+      setTimeout(() => { toast(`Level up! ${SKILLS[R.sub][L]}`); sfx.level(); confetti(70); }, 450);
+    }
+  } else {
+    st.w++; R.streak = 0; R.rightRun = 0; R.wrongRun++;
+    if (R.wrongRun >= 2 && L > 1) { p.levels[R.sub] = L - 1; R.wrongRun = 0; }
+    sfx.wrong();
+  }
+  save();
+  $('#quizStars').innerHTML = starPill(p.stars);
+  renderDots();
+  if (q.kind === 'pad') {
+    const d = $('#paddisp'); d.classList.add(ok ? 'right' : 'wrong');
+    document.querySelectorAll('.pad .ans').forEach(b => b.disabled = true);
+  } else {
+    document.querySelectorAll('#answers .ans').forEach(b => {
+      b.disabled = true;
+      if (b.dataset.v === q.answer) b.classList.add('right');
+      else if (b.dataset.v === val) b.classList.add('wrong');
+    });
+  }
+  // Explain the answer every time, so a right guess still teaches the method
+  const praise = pick(['Yes, well done!', 'Brilliant!', 'You got it!', 'Super!', 'Spot on!']), steps = q.why || [];
+  const fb = $('#feedback'); fb.hidden = false; fb.className = 'feedback ' + (ok ? 'ok' : 'no');
+  fb.innerHTML = `<div class="fbhead"><p class="verdict">${ok ? praise : `Good try! The answer is <b>${esc(q.answer)}</b>`}</p>
+      <button class="btn" id="explainSpeak" aria-label="Read the explanation out loud">${SPEAKER}</button></div>
+    ${steps.length ? `<div class="how"><span class="howlbl">${ok ? 'Here’s how it works' : 'How to work it out'}</span><ol>${steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol></div>` : ''}
+    <button class="btn gold" id="nextBtn">${R.i + 1 >= ROUND ? 'See my stars' : 'Next'}</button>`;
+  R.explainText = speakable(`${ok ? praise : `Good try! The answer is ${q.answer}.`} ${steps.join(' ')}`);
+  if (p.readAloud) speak(R.explainText);
+  $('#nextBtn').focus({ preventScroll: true });
+}
+const speakable = s => s.replace(/×/g, ' times ').replace(/÷/g, ' divided by ').replace(/−/g, ' minus ').replace(/\+/g, ' plus ').replace(/=/g, ' equals ').replace(/↔/g, ' and ').replace(/→/g, ' becomes ');
+function advance() { R.i++; nextQ(); }
+function endRound() {
+  const p = P(); let bonus = 0;
+  if (R.correct === ROUND) bonus = 10; else if (R.correct >= 8) bonus = 5;
+  p.stars += bonus; p.lifetime += bonus; R.earned += bonus; save();
+  const endLevel = p.levels[R.sub], subj = SUBJECTS.find(s => s.id === R.sub);
+  setStage($('#resStage'), p.equip, stageOf(p.lifetime));
+  $('#resTitle').textContent = R.correct === ROUND ? 'Perfect round!' : R.correct >= 8 ? 'Super work!' : R.correct >= 5 ? 'Well done!' : 'Nice try, keep going!';
+  $('#resScore').textContent = `You got ${R.correct} out of ${ROUND} right`;
+  const lines = [`You earned ${R.earned} stars`];
+  if (bonus) lines.push(`Including a ${bonus} star round bonus`);
+  if (endLevel > R.startLevel) lines.push(`${subj.name} went up to level ${endLevel}!`);
+  else lines.push(`${subj.name} is at level ${endLevel}: ${SKILLS[R.sub][endLevel - 1]}`);
+  $('#resList').innerHTML = lines.map(l => `<li>${esc(l)}</li>`).join('');
+  show('results');
+  if (R.correct >= 6) { sfx.level(); confetti(140); }
+}
+
+/* ---------- Shop ---------- */
+let shopCat = 'color', shopSel = null;
+function renderShop() {
+  const p = P(); if (!p) return show('profiles');
+  $('#shopStars').innerHTML = starPill(p.stars);
+  $('#shopTabs').innerHTML = Object.entries(SHOP).map(([k, c]) => `<button class="chip" data-cat="${k}" aria-pressed="${k === shopCat}">${c.label}</button>`).join('');
+  const st = stageOf(p.lifetime);
+  $('#shopItems').innerHTML = SHOP[shopCat].items.map(it => {
+    const own = p.owned.includes(it.id), wearing = p.equip[shopCat] === it.id;
+    let thumb;
+    if (shopCat === 'color') thumb = `<span class="swatch" style="background:${it.swatch || it.fill}"></span>`;
+    else if (shopCat === 'pet') thumb = it.e || '<span class="swatch" style="background:var(--card-soft);border-style:dashed"></span>';
+    else if (shopCat === 'world') thumb = `<span class="swatch" style="width:80px;height:64px;border-radius:12px;background:${it.bg}"></span>`;
+    else thumb = budSVG({ ...p.equip, pet: 'p-none', [shopCat]: it.id }, st);
+    const price = wearing ? '<span class="pr own">Wearing</span>' : own ? '<span class="pr own">Yours</span>' : `<span class="pr">${STAR}${it.price}</span>`;
+    return `<button class="item" data-id="${it.id}" aria-pressed="${shopSel === it.id}"><span class="thumb">${thumb}</span><span class="nm">${it.name}</span>${price}</button>`;
+  }).join('');
+  const sel = shopSel && ITEMS[shopSel];
+  const eq = sel ? { ...p.equip, [sel.cat]: sel.id } : p.equip;
+  setStage($('#shopStage'), eq, st);
+  const act = $('#shopAction');
+  if (!sel) { act.innerHTML = `<p class="hint">Tap anything to try it on.</p>`; return; }
+  const own = p.owned.includes(sel.id), wearing = p.equip[sel.cat] === sel.id;
+  if (wearing) act.innerHTML = `<button class="btn" disabled>${sel.name}: wearing it</button>`;
+  else if (own) act.innerHTML = `<button class="btn green" id="wearBtn">Wear ${sel.name}</button>`;
+  else if (p.stars >= sel.price) act.innerHTML = `<button class="btn gold" id="buyBtn">Buy ${sel.name} for ${sel.price} ${STAR.replace('<svg', '<svg style="width:1.2em;height:1.2em"')}</button>`;
+  else act.innerHTML = `<button class="btn" disabled>${sel.name} costs ${sel.price} stars</button><p class="hint">You need ${sel.price - p.stars} more stars. Play a round to earn them!</p>`;
+}
+
+/* ---------- Grown-ups ---------- */
+let pendingDelete = null;
+function renderVoices() {
+  const fem = femaleVoices(), cur = pickVoice(), sel = $('#voiceSel');
+  const opt = v => `<option value="${esc(v.name)}"${cur && cur.name === v.name ? ' selected' : ''}>${esc(v.name.replace(/^(Microsoft|Google) /, ''))} (${esc(v.lang)})</option>`;
+  const others = voices.filter(v => !fem.includes(v));
+  sel.innerHTML = fem.length || others.length
+    ? `<optgroup label="Women's voices">${fem.map(opt).join('')}</optgroup>${others.length ? `<optgroup label="Other voices">${others.map(opt).join('')}</optgroup>` : ''}`
+    : '<option>Default voice</option>';
+  $('#voiceNote').textContent = fem.length
+    ? 'A woman\'s voice is picked automatically. Voices marked Enhanced or Premium sound the most natural.'
+    : 'No woman\'s voice was found on this device. On iPad you can add one in Settings > Accessibility > Spoken Content > Voices > English.';
+}
+function renderGU() {
+  $('#soundToggle').checked = !!S.sound;
+  renderVoices();
+  $('#guList').innerHTML = S.profiles.map(p => {
+    const rows = SUBJECTS.map(s => { const st = p.stats[s.id], tot = st.r + st.w, acc = tot ? Math.round(st.r / tot * 100) + '%' : '–';
+      return `<tr><td>${s.name}</td><td><span class="lvlctl"><button data-lv="${p.id}|${s.id}|-1" aria-label="Lower ${s.name} level">−</button><span>${p.levels[s.id]}</span><button data-lv="${p.id}|${s.id}|1" aria-label="Raise ${s.name} level">+</button></span></td><td>${SKILLS[s.id][p.levels[s.id] - 1]}</td><td>${fmt(tot)}</td><td>${acc}</td></tr>`; }).join('');
+    return `<div class="gucard"><h3>${esc(p.name)}</h3>
+      <p class="note">${fmt(p.stars)} stars to spend · ${fmt(p.lifetime)} earned in total · best streak ${p.bestStreak || 0}</p>
+      <div class="scrollx"><table class="gutable"><thead><tr><th>SUBJECT</th><th>LEVEL</th><th>SKILL</th><th>ANSWERED</th><th>RIGHT</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <label class="toggle"><input type="checkbox" data-read="${p.id}" ${p.readAloud ? 'checked' : ''}> Read questions out loud</label>
+      <div><button class="btn small" data-del="${p.id}">${pendingDelete === p.id ? `Tap again to delete ${esc(p.name)}` : 'Delete player'}</button></div></div>`;
+  }).join('') || '<p class="note">No players yet.</p>';
+}
+
+/* ---------- Events ---------- */
+document.addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.matches('.pcard[data-id]')) { S.current = t.dataset.id; save(); sfx.tap(); return show('home'); }
+  if (t.id === 'newPlayer' || t.id === 'guAdd') { draft = { age: 1, color: 'c-sun' }; $('#pname').value = ''; return show('create'); }
+  if (t.id === 'createCancel') return show(S.profiles.length ? 'profiles' : 'create');
+  if (t.dataset.age) { draft.age = +t.dataset.age; return renderCreate(); }
+  if (t.dataset.color) { draft.color = t.dataset.color; return renderCreate(); }
+  if (t.id === 'switchWho') return show('profiles');
+  if (t.matches('.tile')) { sfx.tap(); return startRound(t.dataset.s); }
+  if (t.id === 'openShop' || t.id === 'resShop') { shopSel = null; return show('shop'); }
+  if (t.id === 'shopBack' || t.id === 'resHome' || t.id === 'guBack') return show(P() ? 'home' : 'profiles');
+  if (t.id === 'resAgain') return startRound(R.sub);
+  if (t.id === 'quitQuiz') return show('home');
+  if (t.id === 'speakBtn') return speak(R.q.say || R.q.prompt);
+  if (t.id === 'nextBtn') return advance();
+  if (t.id === 'explainSpeak') return speak(R.explainText);
+  if (t.id === 'voiceTest') return speak('Hello! I will read the questions to you. What is 3 plus 4?');
+  if (t.dataset.v !== undefined && t.closest('#answers')) return answer(t.dataset.v);
+  if (t.dataset.k) {
+    if (R.answered) return;
+    const k = t.dataset.k;
+    if (k === 'del') R.input = R.input.slice(0, -1);
+    else if (k === 'ok') { if (R.input) answer(String(+R.input)); else toast('Type your answer first'); return; }
+    else if (R.input.length < 5) R.input += k;
+    sfx.tap(); $('#paddisp').textContent = R.input; return;
+  }
+  if (t.dataset.cat) { shopCat = t.dataset.cat; shopSel = null; return renderShop(); }
+  if (t.matches('.item')) { shopSel = t.dataset.id; sfx.tap(); return renderShop(); }
+  if (t.id === 'buyBtn') { const p = P(), it = ITEMS[shopSel]; if (p.stars < it.price) return;
+    p.stars -= it.price; p.owned.push(it.id); p.equip[it.cat] = it.id; save(); sfx.coin(); confetti(80); toast(`You got the ${it.name}!`); return renderShop(); }
+  if (t.id === 'wearBtn') { const p = P(), it = ITEMS[shopSel]; p.equip[it.cat] = it.id; save(); sfx.tap(); return renderShop(); }
+  if (t.dataset.lv) { const [id, sub, d] = t.dataset.lv.split('|'), p = S.profiles.find(x => x.id === id);
+    p.levels[sub] = Math.min(10, Math.max(1, p.levels[sub] + +d)); save(); return renderGU(); }
+  if (t.dataset.del) { const id = t.dataset.del;
+    if (pendingDelete !== id) { pendingDelete = id; return renderGU(); }
+    S.profiles = S.profiles.filter(p => p.id !== id); if (S.current === id) S.current = S.profiles[0]?.id || null;
+    pendingDelete = null; save(); return renderGU(); }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'soundToggle') { S.sound = t.checked; save(); }
+  if (t.id === 'voiceSel') { S.voice = t.value; save(); speak('Hello! I will read the questions to you.'); }
+  if (t.dataset.read) { const p = S.profiles.find(x => x.id === t.dataset.read); p.readAloud = t.checked; save(); }
+});
+$('#createForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const name = $('#pname').value.trim();
+  if (!name) { const er = $('#createErr'); er.textContent = 'Type your name so we know whose bud this is.'; er.hidden = false; $('#pname').focus(); return; }
+  createProfile(name); sfx.level(); confetti(100); show('home');
+});
+document.addEventListener('keydown', e => {
+  if (current !== 'quiz' || !R) return;
+  if (R.answered) { if (e.key === 'Enter' && document.activeElement?.id !== 'nextBtn') advance(); return; }
+  if (R.q.kind !== 'pad') return;
+  if (/^[0-9]$/.test(e.key) && R.input.length < 5) R.input += e.key;
+  else if (e.key === 'Backspace') R.input = R.input.slice(0, -1);
+  else if (e.key === 'Enter' && R.input) return answer(String(+R.input));
+  else return;
+  $('#paddisp').textContent = R.input;
+});
+// Grown-ups button needs a long press so little fingers don't wander in
+(() => {
+  const b = $('#openGU'); let timer = null;
+  const start = e => { e.preventDefault(); b.classList.add('holding'); timer = setTimeout(() => { b.classList.remove('holding'); pendingDelete = null; show('gu'); }, 1400); };
+  const stop = () => { clearTimeout(timer); b.classList.remove('holding'); };
+  b.addEventListener('pointerdown', start); ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, stop));
+  b.addEventListener('contextmenu', e => e.preventDefault());
+})();
+
+$('#speakBtn').innerHTML = SPEAKER;
+show(S.profiles.length ? (P() ? 'home' : 'profiles') : 'create');
+
+// Offline support when installed from GitHub Pages (skipped where service workers aren't allowed)
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+})();
+</script>
+</body>
+</html>
